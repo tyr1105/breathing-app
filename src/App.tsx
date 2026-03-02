@@ -17,6 +17,7 @@ type TrainingPhase =
   | 'hold'
   | 'recovery'
   | 'complete'
+  | 'paused'
 
 type Page = 'main' | 'settings' | 'history'
 
@@ -30,7 +31,7 @@ function App() {
   const [roundHoldTimes, setRoundHoldTimes] = useState<number[]>([])
   const [breathText, setBreathText] = useState<'吸气' | '呼气'>('吸气')
   const [settings, setSettings] = useState<Settings>(settingsManager.get())
-  const [showStreak] = useState(true)
+  const [pausedPhase, setPausedPhase] = useState<TrainingPhase | null>(null)
 
   const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled, skipSafetyWarning } = settings
 
@@ -55,6 +56,17 @@ function App() {
     }
   }, [vibrationEnabled])
 
+  // 暂停/恢复
+  const togglePause = useCallback(() => {
+    if (phase === 'paused' && pausedPhase) {
+      setPhase(pausedPhase)
+      setPausedPhase(null)
+    } else if (phase !== 'idle' && phase !== 'complete' && phase !== 'safety-check') {
+      setPausedPhase(phase)
+      setPhase('paused')
+    }
+  }, [phase, pausedPhase])
+
   // 呼吸循环
   useEffect(() => {
     if (phase !== 'breathing') return
@@ -64,11 +76,13 @@ function App() {
     doVibrate('short')
 
     const inhaleTimer = setTimeout(() => {
+      if (phase !== 'breathing') return
       setBreathText('呼气')
       playSound('exhale')
       doVibrate('short')
       
       const exhaleTimer = setTimeout(() => {
+        if (phase !== 'breathing') return
         setBreathCount(prev => {
           const newCount = prev + 1
           if (newCount >= breathsPerRound) {
@@ -105,7 +119,6 @@ function App() {
             playSound('complete')
             doVibrate('double')
             
-            // 保存记录
             historyManager.add({
               rounds: totalRounds,
               breathsPerRound,
@@ -113,8 +126,7 @@ function App() {
               totalHoldTime: roundHoldTimes.reduce((a, b) => a + b, 0),
             })
             
-            // 更新统计
-            statsManager.updateTraining()
+            statsManager.updateTraining(roundHoldTimes.reduce((a, b) => a + b, 0))
             const maxHold = Math.max(...roundHoldTimes)
             statsManager.updatePersonalBest(maxHold)
             
@@ -159,6 +171,7 @@ function App() {
       setRecoveryTime(settingRecoveryTime)
       setRoundHoldTimes([])
       setBreathText('吸气')
+      setPausedPhase(null)
     }
   }, [settingRecoveryTime])
 
@@ -171,6 +184,7 @@ function App() {
     setRecoveryTime(settingRecoveryTime)
     setRoundHoldTimes([])
     setBreathText('吸气')
+    setPausedPhase(null)
   }, [settingRecoveryTime])
 
   // 更新设置
@@ -179,7 +193,6 @@ function App() {
     setRecoveryTime(newSettings.recoveryTime)
   }, [])
 
-  // 获取连续天数
   const stats = statsManager.get()
 
   // 历史页面
@@ -203,8 +216,7 @@ function App() {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
         <div className="text-center animate-fade-in">
-          {/* 连续训练天数 */}
-          {stats.consecutiveDays > 0 && showStreak && (
+          {stats.consecutiveDays > 0 && (
             <motion.div 
               className="absolute top-8 left-1/2 -translate-x-1/2 bg-zen-accent/10 px-4 py-2 rounded-full"
               initial={{ opacity: 0, y: -20 }}
@@ -214,12 +226,8 @@ function App() {
             </motion.div>
           )}
           
-          <h1 className="text-4xl font-light text-zen-text mb-2">
-            冰人呼吸法
-          </h1>
-          <p className="text-zen-text-dim mb-8">
-            Wim Hof Method
-          </p>
+          <h1 className="text-4xl font-light text-zen-text mb-2">冰人呼吸法</h1>
+          <p className="text-zen-text-dim mb-8">Wim Hof Method</p>
           
           <BreathingCircle isBreathingIn={true} isActive={false} />
           
@@ -236,19 +244,12 @@ function App() {
             {totalRounds}轮训练 × {breathsPerRound}次呼吸
           </p>
 
-          {/* 底部按钮 */}
           <div className="flex justify-center gap-8 mt-10">
-            <button
-              onClick={() => setPage('history')}
-              className="flex flex-col items-center gap-1 text-zen-text-dim hover:text-zen-text transition-colors"
-            >
+            <button onClick={() => setPage('history')} className="flex flex-col items-center gap-1 text-zen-text-dim hover:text-zen-text transition-colors">
               <span className="text-2xl">📊</span>
               <span className="text-xs">历史</span>
             </button>
-            <button
-              onClick={() => setPage('settings')}
-              className="flex flex-col items-center gap-1 text-zen-text-dim hover:text-zen-text transition-colors"
-            >
+            <button onClick={() => setPage('settings')} className="flex flex-col items-center gap-1 text-zen-text-dim hover:text-zen-text transition-colors">
               <span className="text-2xl">⚙️</span>
               <span className="text-xs">设置</span>
             </button>
@@ -274,33 +275,67 @@ function App() {
     )
   }
 
+  // 暂停状态
+  if (phase === 'paused') {
+    return (
+      <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+        <div className="text-center">
+          <div className="text-6xl mb-6">⏸️</div>
+          <div className="text-3xl font-light text-zen-text mb-2">训练已暂停</div>
+          <p className="text-zen-text-dim mb-8">点击继续恢复训练</p>
+          
+          <button
+            onClick={togglePause}
+            className="py-4 px-10 bg-zen-accent/20 hover:bg-zen-accent/30 
+                       text-zen-accent rounded-2xl transition-all font-medium text-lg"
+          >
+            继续训练
+          </button>
+          
+          <button
+            onClick={exitTraining}
+            className="block mx-auto mt-6 text-zen-text-dim hover:text-zen-text"
+          >
+            退出训练
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   // 呼吸训练
   if (phase === 'breathing') {
     const progress = (breathCount / breathsPerRound) * 100
+    const roundProgress = ((round - 1) / totalRounds) * 100 + (progress / totalRounds)
     
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
-        {/* 退出按钮 */}
-        <button
-          onClick={exitTraining}
-          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg px-4 py-2"
-        >
-          ✕
-        </button>
+        {/* 顶部进度条 */}
+        <div className="fixed top-0 left-0 right-0 h-1 bg-zen-bg-light">
+          <motion.div 
+            className="h-full bg-zen-accent/60"
+            style={{ width: `${roundProgress}%` }}
+          />
+        </div>
 
-        {/* 轮次指示 */}
-        <div className="absolute top-4 left-4 text-zen-text-dim text-sm">
-          第 {round}/{totalRounds} 轮
+        {/* 控制按钮 */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+          <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
+          <div className="flex gap-4">
+            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">
+              ⏸️
+            </button>
+            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-xl px-2">
+              ✕
+            </button>
+          </div>
         </div>
 
         <div className="text-center">
-          <div className="text-4xl font-light text-zen-text mb-6">
-            {breathText}
-          </div>
+          <div className="text-4xl font-light text-zen-text mb-6">{breathText}</div>
           
           <BreathingCircle isBreathingIn={breathText === '吸气'} isActive={true} />
           
-          {/* 进度条 */}
           <div className="mt-8 w-64 mx-auto">
             <div className="flex justify-between text-sm text-zen-text-dim mb-2">
               <span>呼吸次数</span>
@@ -309,9 +344,7 @@ function App() {
             <div className="h-2 bg-zen-bg-light rounded-full overflow-hidden">
               <motion.div 
                 className="h-full bg-zen-accent/60 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3 }}
+                style={{ width: `${progress}%` }}
               />
             </div>
           </div>
@@ -324,40 +357,26 @@ function App() {
   if (phase === 'hold') {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
-        <button
-          onClick={exitTraining}
-          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg px-4 py-2"
-        >
-          ✕
-        </button>
-
-        <div className="absolute top-4 left-4 text-zen-text-dim text-sm">
-          第 {round}/{totalRounds} 轮
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+          <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
+          <div className="flex gap-4">
+            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">⏸️</button>
+            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-xl px-2">✕</button>
+          </div>
         </div>
 
         <div className="text-center">
-          <div className="text-4xl font-light text-zen-text mb-6">
-            憋气
-          </div>
-          
+          <div className="text-4xl font-light text-zen-text mb-6">憋气</div>
           <BreathingCircle isBreathingIn={false} isActive={false} />
           
           <div className="mt-8">
             <Timer time={holdTime} label="憋气时长" />
           </div>
           
-          <button
-            onClick={endHold}
-            className="mt-10 py-4 px-10 bg-zen-gold/20 hover:bg-zen-gold/30 
-                       text-zen-gold rounded-2xl transition-all font-medium text-lg
-                       active:scale-95"
-          >
+          <button onClick={endHold} className="mt-10 py-4 px-10 bg-zen-gold/20 hover:bg-zen-gold/30 text-zen-gold rounded-2xl transition-all font-medium text-lg">
             结束憋气
           </button>
-          
-          <p className="mt-4 text-sm text-zen-text-dim">
-            感觉不舒服时随时可以结束
-          </p>
+          <p className="mt-4 text-sm text-zen-text-dim">感觉不舒服时随时可以结束</p>
         </div>
       </div>
     )
@@ -367,23 +386,18 @@ function App() {
   if (phase === 'recovery') {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
-        <button
-          onClick={exitTraining}
-          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg px-4 py-2"
-        >
-          ✕
-        </button>
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+          <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
+          <div className="flex gap-4">
+            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">⏸️</button>
+            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-xl px-2">✕</button>
+          </div>
+        </div>
 
         <div className="text-center">
-          <div className="text-3xl font-light text-zen-text mb-4">
-            深吸一口气
-          </div>
-          <div className="text-xl text-zen-text-dim mb-8">
-            然后憋住 {recoveryTime} 秒
-          </div>
-          
+          <div className="text-3xl font-light text-zen-text mb-4">深吸一口气</div>
+          <div className="text-xl text-zen-text-dim mb-8">然后憋住 {recoveryTime} 秒</div>
           <BreathingCircle isBreathingIn={true} isActive={true} />
-          
           <div className="mt-8">
             <Timer time={recoveryTime} label="恢复呼吸" />
           </div>
@@ -394,13 +408,7 @@ function App() {
 
   // 训练完成
   if (phase === 'complete') {
-    return (
-      <TrainingSummary 
-        roundHoldTimes={roundHoldTimes}
-        totalRounds={totalRounds}
-        onRestart={reset}
-      />
-    )
+    return <TrainingSummary roundHoldTimes={roundHoldTimes} totalRounds={totalRounds} onRestart={reset} />
   }
 
   return null

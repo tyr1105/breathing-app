@@ -23,6 +23,7 @@ export interface UserStats {
   lastTrainingDate: string | null
   achievements: string[]
   personalBestHold: number
+  totalHoldTime: number
 }
 
 const STORAGE_KEYS = {
@@ -46,6 +47,7 @@ const DEFAULT_STATS: UserStats = {
   lastTrainingDate: null,
   achievements: [],
   personalBestHold: 0,
+  totalHoldTime: 0,
 }
 
 export const historyManager = {
@@ -157,7 +159,7 @@ export const statsManager = {
     }
   },
 
-  updateTraining(): UserStats {
+  updateTraining(totalHoldTime: number): UserStats {
     const stats = this.get()
     const today = new Date().toISOString().split('T')[0]
     
@@ -181,6 +183,7 @@ export const statsManager = {
       consecutiveDays,
       totalSessions: stats.totalSessions + 1,
       lastTrainingDate: today,
+      totalHoldTime: stats.totalHoldTime + totalHoldTime,
     }
     
     localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated))
