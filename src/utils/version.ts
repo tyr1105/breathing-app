@@ -1,8 +1,19 @@
 // 版本信息
-export const APP_VERSION = '2.1.0'
+export const APP_VERSION = '2.5.0'
 export const BUILD_DATE = new Date().toISOString().split('T')[0]
 
 export const CHANGELOG = [
+  {
+    version: '2.5.0',
+    date: '2026-03-03',
+    changes: [
+      '主题切换（深色/浅色/自动）',
+      'PWA离线支持',
+      '代码分割优化',
+      '错误边界处理',
+      '性能优化文档',
+    ],
+  },
   {
     version: '2.1.0',
     date: '2026-03-03',
