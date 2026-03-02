@@ -1,0 +1,16 @@
+{
+  "name": "冰人呼吸法",
+  "short_name": "呼吸训练",
+  "description": "Wim Hof 冰人呼吸法训练应用",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1a",
+  "theme_color": "#0a0f1a",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
