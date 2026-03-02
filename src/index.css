@@ -14,8 +14,24 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #0a0f1a;
+  background: linear-gradient(180deg, #0a0f1a 0%, #0d1425 50%, #0a0f1a 100%);
+  background-attachment: fixed;
   color: #e5e7eb;
+}
+
+/* 背景动态效果 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(110, 231, 183, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(110, 231, 183, 0.02) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* 平滑过渡 */
@@ -35,16 +51,88 @@ button:active {
   transform: scale(0.98);
 }
 
-/* 呼吸圆圈呼吸效果 */
-.breathing-pulse {
-  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* 渐入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes pulse {
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 呼吸光晕动画 */
+@keyframes breathe {
   0%, 100% {
     opacity: 0.3;
+    transform: scale(1);
   }
   50% {
     opacity: 0.6;
+    transform: scale(1.05);
   }
+}
+
+.breathing-glow {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* 进度条渐变 */
+.progress-gradient {
+  background: linear-gradient(90deg, 
+    rgba(110, 231, 183, 0.3) 0%, 
+    rgba(110, 231, 183, 0.6) 50%,
+    rgba(110, 231, 183, 0.8) 100%
+  );
+}
+
+/* 滑块样式 */
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 6px;
+  background: rgba(110, 231, 183, 0.2);
+  border-radius: 3px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: rgba(110, 231, 183, 0.8);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(110, 231, 183, 0.4);
+}
+
+/* 复选框样式 */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  background: rgba(110, 231, 183, 0.1);
+  border: 2px solid rgba(110, 231, 183, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="checkbox"]:checked {
+  background: rgba(110, 231, 183, 0.3);
+  border-color: rgba(110, 231, 183, 0.6);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #6ee7b7;
+  font-size: 14px;
 }
