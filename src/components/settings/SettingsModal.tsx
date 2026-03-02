@@ -7,7 +7,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps) {
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     
@@ -17,112 +17,139 @@ export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps)
       recoveryTime: Number(formData.get('recoveryTime')),
       soundEnabled: formData.get('soundEnabled') === 'on',
       vibrationEnabled: formData.get('vibrationEnabled') === 'on',
+      skipSafetyWarning: formData.get('skipSafetyWarning') === 'on',
     })
   }
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className="bg-zen-bg-light rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-zen-accent/10">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-semibold text-zen-text">设置</h2>
+    <div className="min-h-screen bg-zen-bg p-4 sm:p-6">
+      <div className="max-w-md mx-auto">
+        {/* 头部 */}
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={onClose}
-            className="text-zen-text-dim hover:text-zen-text text-2xl"
+            className="text-zen-text-dim hover:text-zen-text text-lg"
           >
-            ✕
+            ← 返回
           </button>
+          <h2 className="text-xl font-semibold text-zen-text">设置</h2>
+          <div className="w-12" />
         </div>
         
-        <form onSubmit={handleSave} className="space-y-5">
-          {/* 呼吸次数 */}
-          <div>
-            <label className="block text-sm text-zen-text-dim mb-2">
-              每轮呼吸次数
-            </label>
-            <input
-              type="number"
-              name="breathsPerRound"
-              min="10"
-              max="50"
-              value={settings.breathsPerRound}
-              onChange={() => {}}
-              className="w-full bg-zen-bg border border-zen-accent/20 rounded-xl px-4 py-3 text-zen-text focus:outline-none focus:border-zen-accent"
-            />
-          </div>
-
-          {/* 训练轮数 */}
-          <div>
-            <label className="block text-sm text-zen-text-dim mb-2">
-              训练轮数
-            </label>
-            <input
-              type="number"
-              name="totalRounds"
-              min="1"
-              max="10"
-              value={settings.totalRounds}
-              onChange={() => {}}
-              className="w-full bg-zen-bg border border-zen-accent/20 rounded-xl px-4 py-3 text-zen-text focus:outline-none focus:border-zen-accent"
-            />
-          </div>
-
-          {/* 恢复时间 */}
-          <div>
-            <label className="block text-sm text-zen-text-dim mb-2">
-              恢复呼吸时间（秒）
-            </label>
-            <input
-              type="number"
-              name="recoveryTime"
-              min="5"
-              max="30"
-              value={settings.recoveryTime}
-              onChange={() => {}}
-              className="w-full bg-zen-bg border border-zen-accent/20 rounded-xl px-4 py-3 text-zen-text focus:outline-none focus:border-zen-accent"
-            />
-          </div>
-
-          {/* 开关选项 */}
-          <div className="space-y-3 pt-2">
-            <label className="flex items-center justify-between cursor-pointer">
-              <span className="text-zen-text">声音提示</span>
-              <input
-                type="checkbox"
-                name="soundEnabled"
-                defaultChecked={settings.soundEnabled}
-                className="w-5 h-5 rounded accent-zen-accent"
-              />
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* 训练参数 */}
+          <div className="bg-zen-bg-light rounded-2xl p-6 border border-zen-accent/10">
+            <h3 className="text-zen-text font-medium mb-4">训练参数</h3>
             
-            <label className="flex items-center justify-between cursor-pointer">
-              <span className="text-zen-text">振动反馈</span>
+            <div className="space-y-4">
+              <div>
+                <label className="flex justify-between text-sm text-zen-text-dim mb-2">
+                  <span>每轮呼吸次数</span>
+                  <span className="text-zen-accent">{settings.breathsPerRound}</span>
+                </label>
+                <input
+                  type="range"
+                  name="breathsPerRound"
+                  min="10"
+                  max="50"
+                  step="5"
+                  defaultValue={settings.breathsPerRound}
+                  className="w-full accent-zen-accent"
+                />
+              </div>
+
+              <div>
+                <label className="flex justify-between text-sm text-zen-text-dim mb-2">
+                  <span>训练轮数</span>
+                  <span className="text-zen-accent">{settings.totalRounds}</span>
+                </label>
+                <input
+                  type="range"
+                  name="totalRounds"
+                  min="1"
+                  max="10"
+                  defaultValue={settings.totalRounds}
+                  className="w-full accent-zen-accent"
+                />
+              </div>
+
+              <div>
+                <label className="flex justify-between text-sm text-zen-text-dim mb-2">
+                  <span>恢复呼吸时间</span>
+                  <span className="text-zen-accent">{settings.recoveryTime}秒</span>
+                </label>
+                <input
+                  type="range"
+                  name="recoveryTime"
+                  min="5"
+                  max="30"
+                  step="5"
+                  defaultValue={settings.recoveryTime}
+                  className="w-full accent-zen-accent"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 反馈设置 */}
+          <div className="bg-zen-bg-light rounded-2xl p-6 border border-zen-accent/10">
+            <h3 className="text-zen-text font-medium mb-4">反馈设置</h3>
+            
+            <div className="space-y-3">
+              <label className="flex items-center justify-between cursor-pointer py-2">
+                <div>
+                  <span className="text-zen-text">声音提示</span>
+                  <p className="text-xs text-zen-text-dim mt-0.5">吸气/呼气时播放音效</p>
+                </div>
+                <input
+                  type="checkbox"
+                  name="soundEnabled"
+                  defaultChecked={settings.soundEnabled}
+                  className="w-6 h-6 rounded accent-zen-accent"
+                />
+              </label>
+              
+              <label className="flex items-center justify-between cursor-pointer py-2">
+                <div>
+                  <span className="text-zen-text">振动反馈</span>
+                  <p className="text-xs text-zen-text-dim mt-0.5">呼吸切换时振动提示</p>
+                </div>
+                <input
+                  type="checkbox"
+                  name="vibrationEnabled"
+                  defaultChecked={settings.vibrationEnabled}
+                  className="w-6 h-6 rounded accent-zen-accent"
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* 其他设置 */}
+          <div className="bg-zen-bg-light rounded-2xl p-6 border border-zen-accent/10">
+            <h3 className="text-zen-text font-medium mb-4">其他</h3>
+            
+            <label className="flex items-center justify-between cursor-pointer py-2">
+              <div>
+                <span className="text-zen-text">跳过安全提示</span>
+                <p className="text-xs text-zen-text-dim mt-0.5">不再显示安全警告</p>
+              </div>
               <input
                 type="checkbox"
-                name="vibrationEnabled"
-                defaultChecked={settings.vibrationEnabled}
-                className="w-5 h-5 rounded accent-zen-accent"
+                name="skipSafetyWarning"
+                defaultChecked={settings.skipSafetyWarning}
+                className="w-6 h-6 rounded accent-zen-accent"
               />
             </label>
           </div>
 
-          {/* 按钮 */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-3 px-6 bg-zen-bg border border-zen-accent/20 
-                         text-zen-text-dim rounded-xl transition-colors font-medium"
-            >
-              取消
-            </button>
-            <button
-              type="submit"
-              className="flex-1 py-3 px-6 bg-zen-accent/20 hover:bg-zen-accent/30 
-                         text-zen-accent rounded-xl transition-colors font-medium"
-            >
-              保存
-            </button>
-          </div>
+          {/* 保存按钮 */}
+          <button
+            type="submit"
+            className="w-full py-4 px-6 bg-zen-accent/20 hover:bg-zen-accent/30 
+                       text-zen-accent rounded-2xl transition-all font-medium text-lg"
+          >
+            保存设置
+          </button>
         </form>
       </div>
     </div>

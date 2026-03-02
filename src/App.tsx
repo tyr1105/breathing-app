@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import { BreathingCircle } from './components/breathing/BreathingCircle'
 import { SafetyModal } from './components/safety/SafetyModal'
 import { Timer } from './components/breathing/Timer'
@@ -6,7 +7,7 @@ import { TrainingSummary } from './components/summary/TrainingSummary'
 import { SettingsModal } from './components/settings/SettingsModal'
 import { HistoryPage } from './components/history/HistoryPage'
 import { audioManager, vibrate } from './utils/audio'
-import { settingsManager, historyManager } from './utils/storage'
+import { settingsManager, historyManager, statsManager } from './utils/storage'
 import type { Settings } from './utils/storage'
 
 type TrainingPhase = 
@@ -29,8 +30,9 @@ function App() {
   const [roundHoldTimes, setRoundHoldTimes] = useState<number[]>([])
   const [breathText, setBreathText] = useState<'吸气' | '呼气'>('吸气')
   const [settings, setSettings] = useState<Settings>(settingsManager.get())
+  const [showStreak] = useState(true)
 
-  const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled } = settings
+  const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled, skipSafetyWarning } = settings
 
   // 辅助函数
   const playSound = useCallback((type: 'inhale' | 'exhale' | 'holdStart' | 'recoveryTick' | 'complete') => {
@@ -100,7 +102,6 @@ function App() {
         playSound('recoveryTick')
         if (prev <= 1) {
           if (round >= totalRounds) {
-            // 训练完成
             playSound('complete')
             doVibrate('double')
             
@@ -111,6 +112,11 @@ function App() {
               holdTimes: roundHoldTimes,
               totalHoldTime: roundHoldTimes.reduce((a, b) => a + b, 0),
             })
+            
+            // 更新统计
+            statsManager.updateTraining()
+            const maxHold = Math.max(...roundHoldTimes)
+            statsManager.updatePersonalBest(maxHold)
             
             setPhase('complete')
           } else {
@@ -126,6 +132,15 @@ function App() {
     }, 1000)
     return () => clearInterval(timer)
   }, [phase, round, totalRounds, settingRecoveryTime, breathsPerRound, roundHoldTimes, playSound, doVibrate])
+
+  // 开始训练
+  const startTraining = useCallback(() => {
+    if (skipSafetyWarning) {
+      setPhase('breathing')
+    } else {
+      setPhase('safety-check')
+    }
+  }, [skipSafetyWarning])
 
   // 结束憋气
   const endHold = useCallback(() => {
@@ -164,6 +179,9 @@ function App() {
     setRecoveryTime(newSettings.recoveryTime)
   }, [])
 
+  // 获取连续天数
+  const stats = statsManager.get()
+
   // 历史页面
   if (page === 'history') {
     return <HistoryPage onBack={() => setPage('main')} />
@@ -185,6 +203,17 @@ function App() {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
         <div className="text-center animate-fade-in">
+          {/* 连续训练天数 */}
+          {stats.consecutiveDays > 0 && showStreak && (
+            <motion.div 
+              className="absolute top-8 left-1/2 -translate-x-1/2 bg-zen-accent/10 px-4 py-2 rounded-full"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <span className="text-zen-accent text-sm">🔥 连续训练 {stats.consecutiveDays} 天</span>
+            </motion.div>
+          )}
+          
           <h1 className="text-4xl font-light text-zen-text mb-2">
             冰人呼吸法
           </h1>
@@ -195,9 +224,10 @@ function App() {
           <BreathingCircle isBreathingIn={true} isActive={false} />
           
           <button
-            onClick={() => setPhase('safety-check')}
-            className="mt-8 py-3 px-8 bg-zen-accent/20 hover:bg-zen-accent/30 
-                       text-zen-accent rounded-xl transition-colors font-medium"
+            onClick={startTraining}
+            className="mt-8 py-4 px-10 bg-zen-accent/20 hover:bg-zen-accent/30 
+                       text-zen-accent rounded-2xl transition-all font-medium text-lg
+                       active:scale-95 shadow-lg shadow-zen-accent/10"
           >
             开始训练
           </button>
@@ -207,18 +237,20 @@ function App() {
           </p>
 
           {/* 底部按钮 */}
-          <div className="flex justify-center gap-6 mt-8">
+          <div className="flex justify-center gap-8 mt-10">
             <button
               onClick={() => setPage('history')}
-              className="text-zen-text-dim hover:text-zen-text text-sm"
+              className="flex flex-col items-center gap-1 text-zen-text-dim hover:text-zen-text transition-colors"
             >
-              📊 历史记录
+              <span className="text-2xl">📊</span>
+              <span className="text-xs">历史</span>
             </button>
             <button
               onClick={() => setPage('settings')}
-              className="text-zen-text-dim hover:text-zen-text text-sm"
+              className="flex flex-col items-center gap-1 text-zen-text-dim hover:text-zen-text transition-colors"
             >
-              ⚙️ 设置
+              <span className="text-2xl">⚙️</span>
+              <span className="text-xs">设置</span>
             </button>
           </div>
         </div>
@@ -230,36 +262,58 @@ function App() {
   if (phase === 'safety-check') {
     return (
       <div className="min-h-screen bg-zen-bg flex items-center justify-center">
-        <SafetyModal onConfirm={() => setPhase('breathing')} />
+        <SafetyModal 
+          onConfirm={() => setPhase('breathing')} 
+          onSkip={() => {
+            settingsManager.save({ skipSafetyWarning: true })
+            setSettings(prev => ({ ...prev, skipSafetyWarning: true }))
+            setPhase('breathing')
+          }}
+        />
       </div>
     )
   }
 
   // 呼吸训练
   if (phase === 'breathing') {
+    const progress = (breathCount / breathsPerRound) * 100
+    
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
         {/* 退出按钮 */}
         <button
           onClick={exitTraining}
-          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg"
+          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg px-4 py-2"
         >
-          ✕ 退出
+          ✕
         </button>
 
+        {/* 轮次指示 */}
+        <div className="absolute top-4 left-4 text-zen-text-dim text-sm">
+          第 {round}/{totalRounds} 轮
+        </div>
+
         <div className="text-center">
-          <div className="text-sm text-zen-text-dim mb-2">
-            第 {round}/{totalRounds} 轮
-          </div>
-          
-          <div className="text-3xl text-zen-text mb-4">
+          <div className="text-4xl font-light text-zen-text mb-6">
             {breathText}
           </div>
           
           <BreathingCircle isBreathingIn={breathText === '吸气'} isActive={true} />
           
-          <div className="mt-6 text-zen-accent text-xl">
-            {breathCount} / {breathsPerRound}
+          {/* 进度条 */}
+          <div className="mt-8 w-64 mx-auto">
+            <div className="flex justify-between text-sm text-zen-text-dim mb-2">
+              <span>呼吸次数</span>
+              <span className="text-zen-accent">{breathCount} / {breathsPerRound}</span>
+            </div>
+            <div className="h-2 bg-zen-bg-light rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-zen-accent/60 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -270,36 +324,40 @@ function App() {
   if (phase === 'hold') {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
-        {/* 退出按钮 */}
         <button
           onClick={exitTraining}
-          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg"
+          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg px-4 py-2"
         >
-          ✕ 退出
+          ✕
         </button>
 
+        <div className="absolute top-4 left-4 text-zen-text-dim text-sm">
+          第 {round}/{totalRounds} 轮
+        </div>
+
         <div className="text-center">
-          <div className="text-sm text-zen-text-dim mb-2">
-            第 {round}/{totalRounds} 轮
-          </div>
-          
-          <div className="text-3xl text-zen-text mb-4">
+          <div className="text-4xl font-light text-zen-text mb-6">
             憋气
           </div>
           
           <BreathingCircle isBreathingIn={false} isActive={false} />
           
-          <div className="mt-6">
+          <div className="mt-8">
             <Timer time={holdTime} label="憋气时长" />
           </div>
           
           <button
             onClick={endHold}
-            className="mt-8 py-3 px-8 bg-zen-gold/20 hover:bg-zen-gold/30 
-                       text-zen-gold rounded-xl transition-colors font-medium"
+            className="mt-10 py-4 px-10 bg-zen-gold/20 hover:bg-zen-gold/30 
+                       text-zen-gold rounded-2xl transition-all font-medium text-lg
+                       active:scale-95"
           >
             结束憋气
           </button>
+          
+          <p className="mt-4 text-sm text-zen-text-dim">
+            感觉不舒服时随时可以结束
+          </p>
         </div>
       </div>
     )
@@ -309,22 +367,24 @@ function App() {
   if (phase === 'recovery') {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
-        {/* 退出按钮 */}
         <button
           onClick={exitTraining}
-          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg"
+          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg px-4 py-2"
         >
-          ✕ 退出
+          ✕
         </button>
 
         <div className="text-center">
-          <div className="text-3xl text-zen-text mb-4">
-            深吸一口气，憋住
+          <div className="text-3xl font-light text-zen-text mb-4">
+            深吸一口气
+          </div>
+          <div className="text-xl text-zen-text-dim mb-8">
+            然后憋住 {recoveryTime} 秒
           </div>
           
           <BreathingCircle isBreathingIn={true} isActive={true} />
           
-          <div className="mt-6">
+          <div className="mt-8">
             <Timer time={recoveryTime} label="恢复呼吸" />
           </div>
         </div>
