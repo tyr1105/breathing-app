@@ -1,4 +1,5 @@
-import { TrainingRecord, historyManager } from '../../utils/storage'
+import type { TrainingRecord } from '../../utils/storage'
+import { historyManager } from '../../utils/storage'
 
 interface HistoryPageProps {
   onBack: () => void

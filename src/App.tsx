@@ -6,7 +6,8 @@ import { TrainingSummary } from './components/summary/TrainingSummary'
 import { SettingsModal } from './components/settings/SettingsModal'
 import { HistoryPage } from './components/history/HistoryPage'
 import { audioManager, vibrate } from './utils/audio'
-import { settingsManager, historyManager, Settings } from './utils/storage'
+import { settingsManager, historyManager } from './utils/storage'
+import type { Settings } from './utils/storage'
 
 type TrainingPhase = 
   | 'idle'

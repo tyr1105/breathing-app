@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { TrainingState, TrainingActions } from '../types/training'
+import type { TrainingState, TrainingActions } from '../types/training'
 
 const initialState: TrainingState = {
   phase: 'idle',

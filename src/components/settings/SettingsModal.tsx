@@ -1,4 +1,4 @@
-import { Settings } from '../../utils/storage'
+import type { Settings } from '../../utils/storage'
 
 interface SettingsModalProps {
   settings: Settings
