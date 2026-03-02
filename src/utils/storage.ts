@@ -15,6 +15,10 @@ export interface Settings {
   vibrationEnabled: boolean
   recoveryTime: number
   skipSafetyWarning: boolean
+  hasSeenOnboarding: boolean
+  trainingMode: 'beginner' | 'standard' | 'advanced'
+  inhaleTime: number
+  exhaleTime: number
 }
 
 export interface UserStats {
@@ -39,6 +43,10 @@ const DEFAULT_SETTINGS: Settings = {
   vibrationEnabled: true,
   recoveryTime: 15,
   skipSafetyWarning: false,
+  hasSeenOnboarding: false,
+  trainingMode: 'standard',
+  inhaleTime: 2,
+  exhaleTime: 1,
 }
 
 const DEFAULT_STATS: UserStats = {

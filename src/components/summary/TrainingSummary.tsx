@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { statsManager } from '../../utils/storage'
+import { ShareCard } from '../share/ShareCard'
 
 interface TrainingSummaryProps {
   roundHoldTimes: number[]
@@ -20,13 +21,11 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
     return min > 0 ? `${min}分${sec}秒` : `${sec}秒`
   }
 
-  // 检查是否打破记录
-  const isNewRecord = maxTime >= stats.personalBestHold
+  const isNewRecord = maxTime >= stats.personalBestHold && maxTime > 0
 
   return (
     <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4 sm:p-6">
       <div className="max-w-md w-full">
-        {/* 庆祝动画 */}
         <motion.div 
           className="text-center mb-8"
           initial={{ scale: 0.5, opacity: 0 }}
@@ -34,9 +33,7 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           transition={{ type: 'spring', duration: 0.8 }}
         >
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-3xl font-light text-zen-accent mb-2">
-            训练完成
-          </h2>
+          <h2 className="text-3xl font-light text-zen-accent mb-2">训练完成</h2>
           <p className="text-zen-text-dim">太棒了！你完成了 {totalRounds} 轮训练</p>
           
           {isNewRecord && (
@@ -51,7 +48,6 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           )}
         </motion.div>
 
-        {/* 总时长卡片 */}
         <motion.div 
           className="bg-zen-bg-light rounded-3xl p-8 mb-6 border border-zen-accent/10 text-center"
           initial={{ y: 20, opacity: 0 }}
@@ -59,19 +55,13 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           transition={{ delay: 0.2 }}
         >
           <div className="text-sm text-zen-text-dim mb-2">总憋气时长</div>
-          <div className="text-5xl font-light text-zen-accent mb-4">
-            {formatTime(totalTime)}
-          </div>
+          <div className="text-5xl font-light text-zen-accent mb-4">{formatTime(totalTime)}</div>
           
-          {/* 连续天数 */}
           {stats.consecutiveDays > 1 && (
-            <div className="text-sm text-zen-gold">
-              🔥 连续训练 {stats.consecutiveDays} 天
-            </div>
+            <div className="text-sm text-zen-gold">🔥 连续训练 {stats.consecutiveDays} 天</div>
           )}
         </motion.div>
 
-        {/* 各轮详情 */}
         <motion.div 
           className="bg-zen-bg-light rounded-3xl p-6 mb-6 border border-zen-accent/10"
           initial={{ y: 20, opacity: 0 }}
@@ -82,7 +72,7 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           
           <div className="space-y-3">
             {roundHoldTimes.map((time, index) => {
-              const percentage = (time / maxTime) * 100
+              const percentage = maxTime > 0 ? (time / maxTime) * 100 : 0
               const isMax = time === maxTime
               
               return (
@@ -105,9 +95,8 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           </div>
         </motion.div>
 
-        {/* 统计数据 */}
         <motion.div 
-          className="grid grid-cols-3 gap-3 mb-8"
+          className="grid grid-cols-3 gap-3 mb-6"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
@@ -126,10 +115,22 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           </div>
         </motion.div>
 
-        {/* 重新开始按钮 */}
+        {/* 分享按钮 */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.45 }}
+        >
+          <ShareCard 
+            roundHoldTimes={roundHoldTimes}
+            totalRounds={totalRounds}
+            consecutiveDays={stats.consecutiveDays}
+          />
+        </motion.div>
+
         <motion.button
           onClick={onRestart}
-          className="w-full py-4 px-6 bg-zen-accent/20 hover:bg-zen-accent/30 
+          className="w-full mt-4 py-4 px-6 bg-zen-accent/20 hover:bg-zen-accent/30 
                      text-zen-accent rounded-2xl transition-all font-medium text-lg"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -139,7 +140,6 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           再来一次
         </motion.button>
 
-        {/* 提示 */}
         <p className="text-center text-xs text-zen-text-dim mt-6">
           坚持每天练习，效果更佳 💪
         </p>

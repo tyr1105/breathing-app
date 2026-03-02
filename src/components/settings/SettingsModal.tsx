@@ -12,6 +12,7 @@ export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps)
     const formData = new FormData(e.currentTarget)
     
     onSave({
+      ...settings,
       breathsPerRound: Number(formData.get('breathsPerRound')),
       totalRounds: Number(formData.get('totalRounds')),
       recoveryTime: Number(formData.get('recoveryTime')),

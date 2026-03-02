@@ -115,28 +115,46 @@ class AudioManager {
       oscillator.stop(startTime + 0.3)
     })
   }
+
+  // 成就解锁提示音
+  playAchievement() {
+    this.init()
+    if (!this.audioContext) return
+    
+    const notes = [523, 659, 784, 1047] // C5, E5, G5, C6
+    notes.forEach((freq, i) => {
+      const oscillator = this.audioContext!.createOscillator()
+      const gainNode = this.audioContext!.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(this.audioContext!.destination)
+      
+      const startTime = this.audioContext!.currentTime + i * 0.15
+      oscillator.frequency.setValueAtTime(freq, startTime)
+      
+      gainNode.gain.setValueAtTime(0.25, startTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.25)
+      
+      oscillator.start(startTime)
+      oscillator.stop(startTime + 0.25)
+    })
+  }
 }
 
 export const audioManager = new AudioManager()
 
 // 振动管理
 export const vibrate = {
-  // 短振动
   short: () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(50)
-    }
+    if (navigator.vibrate) navigator.vibrate(50)
   },
-  // 长振动
   long: () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(200)
-    }
+    if (navigator.vibrate) navigator.vibrate(200)
   },
-  // 双击振动
   double: () => {
-    if (navigator.vibrate) {
-      navigator.vibrate([50, 100, 50])
-    }
+    if (navigator.vibrate) navigator.vibrate([50, 100, 50])
+  },
+  triple: () => {
+    if (navigator.vibrate) navigator.vibrate([50, 80, 50, 80, 50])
   }
 }
