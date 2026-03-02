@@ -3,6 +3,10 @@ import { BreathingCircle } from './components/breathing/BreathingCircle'
 import { SafetyModal } from './components/safety/SafetyModal'
 import { Timer } from './components/breathing/Timer'
 import { TrainingSummary } from './components/summary/TrainingSummary'
+import { SettingsModal } from './components/settings/SettingsModal'
+import { HistoryPage } from './components/history/HistoryPage'
+import { audioManager, vibrate } from './utils/audio'
+import { settingsManager, historyManager, Settings } from './utils/storage'
 
 type TrainingPhase = 
   | 'idle'
@@ -12,7 +16,10 @@ type TrainingPhase =
   | 'recovery'
   | 'complete'
 
+type Page = 'main' | 'settings' | 'history'
+
 function App() {
+  const [page, setPage] = useState<Page>('main')
   const [phase, setPhase] = useState<TrainingPhase>('idle')
   const [round, setRound] = useState(1)
   const [breathCount, setBreathCount] = useState(0)
@@ -20,26 +27,52 @@ function App() {
   const [recoveryTime, setRecoveryTime] = useState(15)
   const [roundHoldTimes, setRoundHoldTimes] = useState<number[]>([])
   const [breathText, setBreathText] = useState<'吸气' | '呼气'>('吸气')
+  const [settings, setSettings] = useState<Settings>(settingsManager.get())
 
-  const totalRounds = 3
-  const breathsPerRound = 30
+  const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled } = settings
+
+  // 辅助函数
+  const playSound = useCallback((type: 'inhale' | 'exhale' | 'holdStart' | 'recoveryTick' | 'complete') => {
+    if (!soundEnabled) return
+    switch (type) {
+      case 'inhale': audioManager.playInhale(); break
+      case 'exhale': audioManager.playExhale(); break
+      case 'holdStart': audioManager.playHoldStart(); break
+      case 'recoveryTick': audioManager.playRecoveryTick(); break
+      case 'complete': audioManager.playComplete(); break
+    }
+  }, [soundEnabled])
+
+  const doVibrate = useCallback((type: 'short' | 'long' | 'double') => {
+    if (!vibrationEnabled) return
+    switch (type) {
+      case 'short': vibrate.short(); break
+      case 'long': vibrate.long(); break
+      case 'double': vibrate.double(); break
+    }
+  }, [vibrationEnabled])
 
   // 呼吸循环
   useEffect(() => {
     if (phase !== 'breathing') return
 
-    // 吸气阶段 - 2秒
     setBreathText('吸气')
+    playSound('inhale')
+    doVibrate('short')
+
     const inhaleTimer = setTimeout(() => {
       setBreathText('呼气')
+      playSound('exhale')
+      doVibrate('short')
       
-      // 呼气阶段 - 1秒
       const exhaleTimer = setTimeout(() => {
         setBreathCount(prev => {
           const newCount = prev + 1
           if (newCount >= breathsPerRound) {
             setPhase('hold')
             setHoldTime(0)
+            playSound('holdStart')
+            doVibrate('long')
           }
           return newCount
         })
@@ -49,7 +82,7 @@ function App() {
     }, 2000)
 
     return () => clearTimeout(inhaleTimer)
-  }, [phase, breathCount, breathsPerRound])
+  }, [phase, breathCount, breathsPerRound, playSound, doVibrate])
 
   // 憋气计时器
   useEffect(() => {
@@ -63,8 +96,21 @@ function App() {
     if (phase !== 'recovery') return
     const timer = setInterval(() => {
       setRecoveryTime(prev => {
+        playSound('recoveryTick')
         if (prev <= 1) {
           if (round >= totalRounds) {
+            // 训练完成
+            playSound('complete')
+            doVibrate('double')
+            
+            // 保存记录
+            historyManager.add({
+              rounds: totalRounds,
+              breathsPerRound,
+              holdTimes: roundHoldTimes,
+              totalHoldTime: roundHoldTimes.reduce((a, b) => a + b, 0),
+            })
+            
             setPhase('complete')
           } else {
             setPhase('breathing')
@@ -72,20 +118,33 @@ function App() {
             setBreathCount(0)
             setBreathText('吸气')
           }
-          return 15
+          return settingRecoveryTime
         }
         return prev - 1
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [phase, round, totalRounds])
+  }, [phase, round, totalRounds, settingRecoveryTime, breathsPerRound, roundHoldTimes, playSound, doVibrate])
 
   // 结束憋气
   const endHold = useCallback(() => {
     setRoundHoldTimes(prev => [...prev, holdTime])
     setPhase('recovery')
-    setRecoveryTime(15)
-  }, [holdTime])
+    setRecoveryTime(settingRecoveryTime)
+  }, [holdTime, settingRecoveryTime])
+
+  // 退出训练
+  const exitTraining = useCallback(() => {
+    if (confirm('确定要退出训练吗？当前进度将不会保存。')) {
+      setPhase('idle')
+      setRound(1)
+      setBreathCount(0)
+      setHoldTime(0)
+      setRecoveryTime(settingRecoveryTime)
+      setRoundHoldTimes([])
+      setBreathText('吸气')
+    }
+  }, [settingRecoveryTime])
 
   // 重置
   const reset = useCallback(() => {
@@ -93,10 +152,32 @@ function App() {
     setRound(1)
     setBreathCount(0)
     setHoldTime(0)
-    setRecoveryTime(15)
+    setRecoveryTime(settingRecoveryTime)
     setRoundHoldTimes([])
     setBreathText('吸气')
+  }, [settingRecoveryTime])
+
+  // 更新设置
+  const handleSaveSettings = useCallback((newSettings: Settings) => {
+    setSettings(newSettings)
+    setRecoveryTime(newSettings.recoveryTime)
   }, [])
+
+  // 历史页面
+  if (page === 'history') {
+    return <HistoryPage onBack={() => setPage('main')} />
+  }
+
+  // 设置页面
+  if (page === 'settings') {
+    return (
+      <SettingsModal
+        settings={settings}
+        onSave={handleSaveSettings}
+        onClose={() => setPage('main')}
+      />
+    )
+  }
 
   // 空闲状态
   if (phase === 'idle') {
@@ -123,6 +204,22 @@ function App() {
           <p className="mt-6 text-sm text-zen-text-dim">
             {totalRounds}轮训练 × {breathsPerRound}次呼吸
           </p>
+
+          {/* 底部按钮 */}
+          <div className="flex justify-center gap-6 mt-8">
+            <button
+              onClick={() => setPage('history')}
+              className="text-zen-text-dim hover:text-zen-text text-sm"
+            >
+              📊 历史记录
+            </button>
+            <button
+              onClick={() => setPage('settings')}
+              className="text-zen-text-dim hover:text-zen-text text-sm"
+            >
+              ⚙️ 设置
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -141,6 +238,14 @@ function App() {
   if (phase === 'breathing') {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+        {/* 退出按钮 */}
+        <button
+          onClick={exitTraining}
+          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg"
+        >
+          ✕ 退出
+        </button>
+
         <div className="text-center">
           <div className="text-sm text-zen-text-dim mb-2">
             第 {round}/{totalRounds} 轮
@@ -164,6 +269,14 @@ function App() {
   if (phase === 'hold') {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+        {/* 退出按钮 */}
+        <button
+          onClick={exitTraining}
+          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg"
+        >
+          ✕ 退出
+        </button>
+
         <div className="text-center">
           <div className="text-sm text-zen-text-dim mb-2">
             第 {round}/{totalRounds} 轮
@@ -195,6 +308,14 @@ function App() {
   if (phase === 'recovery') {
     return (
       <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+        {/* 退出按钮 */}
+        <button
+          onClick={exitTraining}
+          className="absolute top-4 right-4 text-zen-text-dim hover:text-zen-text text-lg"
+        >
+          ✕ 退出
+        </button>
+
         <div className="text-center">
           <div className="text-3xl text-zen-text mb-4">
             深吸一口气，憋住
