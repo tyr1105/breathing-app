@@ -1,8 +1,21 @@
 // 版本信息
-export const APP_VERSION = '2.5.0'
+export const APP_VERSION = '3.0.0'
 export const BUILD_DATE = new Date().toISOString().split('T')[0]
 
 export const CHANGELOG = [
+  {
+    version: '3.0.0',
+    date: '2026-03-03',
+    changes: [
+      '🎉 完整发布版本',
+      '30个版本迭代完成',
+      '11个成就徽章',
+      '主题切换支持',
+      'PWA离线支持',
+      '键盘快捷键',
+      '完整的文档系统',
+    ],
+  },
   {
     version: '2.5.0',
     date: '2026-03-03',
@@ -12,15 +25,6 @@ export const CHANGELOG = [
       '代码分割优化',
       '错误边界处理',
       '性能优化文档',
-    ],
-  },
-  {
-    version: '2.1.0',
-    date: '2026-03-03',
-    changes: [
-      '新增呼吸技巧说明页',
-      '优化成就系统',
-      '修复已知问题',
     ],
   },
   {
