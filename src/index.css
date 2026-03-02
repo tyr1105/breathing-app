@@ -136,3 +136,37 @@ input[type="checkbox"]:checked::after {
   color: #6ee7b7;
   font-size: 14px;
 }
+
+/* 浅色主题 */
+.light-theme body {
+  background: linear-gradient(180deg, #f5f7fa 0%, #e8ecf1 50%, #f5f7fa 100%);
+  color: #1f2937;
+}
+
+.light-theme body::before {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(110, 231, 183, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(110, 231, 183, 0.06) 0%, transparent 40%);
+}
+
+.light-theme .text-zen-text-dim {
+  color: #6b7280 !important;
+}
+
+.light-theme .bg-zen-bg-light {
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.light-theme .border-zen-accent\/10 {
+  border-color: rgba(110, 231, 183, 0.2) !important;
+}
+
+.light-theme input[type="range"] {
+  background: rgba(110, 231, 183, 0.3);
+}
+
+.light-theme input[type="checkbox"] {
+  background: rgba(110, 231, 183, 0.15);
+  border-color: rgba(110, 231, 183, 0.4);
+}

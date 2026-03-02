@@ -19,6 +19,7 @@ export interface Settings {
   trainingMode: 'beginner' | 'standard' | 'advanced'
   inhaleTime: number
   exhaleTime: number
+  theme: 'dark' | 'light' | 'auto'
 }
 
 export interface UserStats {
@@ -47,6 +48,7 @@ const DEFAULT_SETTINGS: Settings = {
   trainingMode: 'standard',
   inhaleTime: 2,
   exhaleTime: 1,
+  theme: 'dark',
 }
 
 const DEFAULT_STATS: UserStats = {
