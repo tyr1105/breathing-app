@@ -24,7 +24,7 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
   const isNewRecord = maxTime >= stats.personalBestHold && maxTime > 0
 
   return (
-    <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4 sm:p-6">
+    <div className="fullscreen-page bg-zen-bg p-4 sm:p-6">
       <div className="max-w-md w-full">
         <motion.div 
           className="text-center mb-8"

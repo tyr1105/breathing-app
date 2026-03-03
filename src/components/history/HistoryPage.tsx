@@ -36,8 +36,8 @@ export function HistoryPage({ onBack }: HistoryPageProps) {
   const maxAvgHold = Math.max(...last7Days.map(d => d.avgHold), 1)
 
   return (
-    <div className="min-h-screen bg-zen-bg p-4 sm:p-6">
-      <div className="max-w-md mx-auto">
+    <div className="fullscreen-page-top bg-zen-bg p-4 sm:p-6">
+      <div className="max-w-md mx-auto w-full">
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="text-zen-text-dim hover:text-zen-text text-lg">← 返回</button>
           <h2 className="text-xl font-semibold text-zen-text">训练历史</h2>

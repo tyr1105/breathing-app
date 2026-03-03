@@ -7,7 +7,7 @@ interface AboutPageProps {
 
 export function AboutPage({ onBack }: AboutPageProps) {
   return (
-    <div className="min-h-screen bg-zen-bg p-4 sm:p-6">
+    <div className="fullscreen-page-top bg-zen-bg p-4 sm:p-6">
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
           <button onClick={onBack} className="text-zen-text-dim hover:text-zen-text text-lg">← 返回</button>

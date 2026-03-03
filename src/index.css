@@ -195,6 +195,19 @@ input[type="checkbox"]:checked::after {
   padding-right: env(safe-area-inset-right);
 }
 
+/* 顶部对齐的页面（用于列表/设置等长内容页面） */
+.fullscreen-page-top {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  padding-top: max(env(safe-area-inset-top), 24px);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
 /* 顶部控制栏位置适配 */
 .top-bar {
   position: absolute;

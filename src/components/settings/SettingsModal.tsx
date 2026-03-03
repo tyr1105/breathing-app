@@ -23,8 +23,8 @@ export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps)
   }
 
   return (
-    <div className="min-h-screen bg-zen-bg p-4 sm:p-6">
-      <div className="max-w-md mx-auto">
+    <div className="fullscreen-page-top bg-zen-bg p-4 sm:p-6">
+      <div className="max-w-md mx-auto w-full">
         {/* 头部 */}
         <div className="flex items-center justify-between mb-8">
           <button
