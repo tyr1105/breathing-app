@@ -26,10 +26,15 @@
   --bg-tertiary: #1e293b;
   --bg-elevated: #1e293b;
   
-  /* 强调色（Healthcare + Calm） */
+  /* 强调色（Healthcare + Calm + Biomimetic） */
   --accent-primary: #22d3ee;      /* 青色（主） */
   --accent-secondary: #7dd4a8;    /* 薄荷绿（次） */
   --accent-tertiary: #a78bfa;     /* 淡紫（辅助） */
+  
+  /* 生物发光色（Biomimetic Organic） */
+  --bioluminescent: #00ffff;      /* 生物发光青 */
+  --chlorophyll: #00ff41;         /* 叶绿素绿 */
+  --cellular-pink: #ff9999;       /* 细胞粉 */
   
   /* 状态色 */
   --success: #10b981;
@@ -47,6 +52,7 @@
   --glow-primary: rgba(34, 211, 238, 0.3);
   --glow-secondary: rgba(125, 212, 168, 0.3);
   --glow-warning: rgba(251, 191, 36, 0.3);
+  --glow-bioluminescent: rgba(0, 255, 255, 0.3);  /* 生物发光光晕 */
   
   /* ===== 间距系统（8pt） ===== */
   --space-1: 0.25rem;   /* 4px */

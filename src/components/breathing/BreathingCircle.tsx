@@ -6,15 +6,31 @@ interface BreathingCircleProps {
 }
 
 export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProps) {
-  // 缓动曲线：吸气先快后慢，呼气两端慢中间快
-  const inhaleEasing = [0.4, 0, 0.2, 1] as const // ease-out
-  const exhaleEasing = [0.4, 0, 0.6, 1] as const // ease-in-out
+  // Biomimetic 呼吸曲线 - 模拟自然呼吸节奏
+  const inhaleEasing = [0.4, 0, 0.2, 1] as const // ease-out - 先快后慢
+  const exhaleEasing = [0.4, 0, 0.6, 1] as const // ease-in-out - 两端慢中间快
   
   const currentEasing = isBreathingIn ? inhaleEasing : exhaleEasing
   const duration = isBreathingIn ? 2 : 1
 
   return (
     <div className="relative flex items-center justify-center w-64 h-64">
+      {/* 最外层生物发光光晕 - 新增 */}
+      <motion.div
+        className="absolute w-72 h-72 rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(0, 255, 255, 0.08) 0%, transparent 60%)',
+          filter: 'blur(20px)', // 有机模糊效果
+        }}
+        animate={{
+          scale: isActive ? (isBreathingIn ? 1.8 : 1.2) : 1,
+          opacity: isActive ? [0.3, 0.6, 0.3] : 0.1,
+        }}
+        transition={{
+          scale: { duration, ease: currentEasing },
+          opacity: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
+        }}
+      />
       {/* 最外层光晕 - 呼吸感脉动 */}
       <motion.div
         className="absolute w-64 h-64 rounded-full"
@@ -76,13 +92,13 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
         }}
       />
       
-      {/* 主圆圈 - 增强发光效果 */}
+      {/* 主圆圈 - 增强生物发光效果 */}
       <motion.div
         className="relative w-28 h-28 rounded-full flex items-center justify-center"
         style={{
           background: 'linear-gradient(135deg, rgba(125, 212, 168, 0.35) 0%, rgba(125, 212, 168, 0.15) 100%)',
           boxShadow: isActive 
-            ? '0 0 60px rgba(125, 212, 168, 0.4), 0 0 100px rgba(125, 212, 168, 0.2), inset 0 0 30px rgba(125, 212, 168, 0.15)'
+            ? '0 0 60px rgba(125, 212, 168, 0.4), 0 0 100px rgba(125, 212, 168, 0.2), 0 0 140px rgba(0, 255, 255, 0.15), inset 0 0 30px rgba(125, 212, 168, 0.15)'
             : '0 0 30px rgba(125, 212, 168, 0.15), 0 0 60px rgba(125, 212, 168, 0.08)',
           border: '2px solid rgba(125, 212, 168, 0.4)',
         }}
@@ -94,11 +110,12 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
           ease: currentEasing,
         }}
       >
-        {/* 中心点 - 增强脉动 */}
+        {/* 中心点 - 心脏跳动效果 */}
         <motion.div
-          className="w-5 h-5 rounded-full bg-zen-accent/60"
+          className="w-5 h-5 rounded-full"
           style={{
-            boxShadow: '0 0 20px rgba(125, 212, 168, 0.6)',
+            background: 'radial-gradient(circle, rgba(125, 212, 168, 0.8) 0%, rgba(0, 255, 255, 0.4) 100%)',
+            boxShadow: '0 0 20px rgba(125, 212, 168, 0.6), 0 0 40px rgba(0, 255, 255, 0.3)',
           }}
           animate={{
             scale: isActive ? (isBreathingIn ? 1.8 : 0.7) : 1,
