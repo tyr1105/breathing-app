@@ -41,7 +41,7 @@ const BreathIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-const tabs: { id: TabType; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
+const tabs: { id: TabType; label: string; Icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }[] = [
   { id: 'home', label: '首页', Icon: HomeIcon },
   { id: 'stats', label: '数据', Icon: ChartIcon },
   { id: 'achievements', label: '成就', Icon: TrophyIcon },
@@ -124,7 +124,7 @@ function TabItem({
   isActive, 
   onClick 
 }: { 
-  tab: { id: TabType; label: string; Icon: React.ComponentType<{ className?: string }> }
+  tab: { id: TabType; label: string; Icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }
   isActive: boolean
   onClick: () => void 
 }) {

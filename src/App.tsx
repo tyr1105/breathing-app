@@ -10,6 +10,7 @@ import { SettingsModal } from './components/settings/SettingsModal'
 import { HistoryPage } from './components/history/HistoryPage'
 import { AchievementsPage } from './components/achievements/AchievementsPage'
 import { TabBar, type TabType } from './components/layout/TabBar'
+import { ToastContainer, useToast } from './components/ui/Toast'
 import { audioManager, vibrate } from './utils/audio'
 import { settingsManager, historyManager, statsManager } from './utils/storage'
 import type { Settings } from './utils/storage'
@@ -59,6 +60,9 @@ function App() {
   const [settings, setSettings] = useState<Settings>(settingsManager.get())
   const [pausedPhase, setPausedPhase] = useState<TrainingPhase | null>(null)
   const [countdown, setCountdown] = useState(3) // 倒计时计数器
+
+  // Toast 通知
+  const { toasts, addToast, dismissToast } = useToast()
 
   const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled, skipSafetyWarning } = settings
 
@@ -277,6 +281,15 @@ function App() {
             statsManager.updatePersonalBest(maxHold)
             
             setPhase('complete')
+            
+            // 显示训练完成 Toast
+            const totalSeconds = roundHoldTimes.reduce((a, b) => a + b, 0)
+            const minutes = Math.floor(totalSeconds / 60)
+            const seconds = totalSeconds % 60
+            addToast(
+              `训练完成！总憋气时间：${minutes > 0 ? `${minutes}分` : ''}${seconds}秒`,
+              'success'
+            )
           } else {
             setPhase('breathing')
             setRound(r => r + 1)
@@ -817,10 +830,15 @@ function App() {
 
   // 训练完成
   if (phase === 'complete') {
-    return <TrainingSummary roundHoldTimes={roundHoldTimes} totalRounds={totalRounds} onRestart={reset} />
+    return (
+      <>
+        <TrainingSummary roundHoldTimes={roundHoldTimes} totalRounds={totalRounds} onRestart={reset} />
+        <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      </>
+    )
   }
 
-  return null
+  return <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 }
 
 export default App
