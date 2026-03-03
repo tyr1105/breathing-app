@@ -512,40 +512,64 @@ function App() {
     return (
       <div className="fullscreen-page bg-zen-bg p-4">
         {/* 顶部进度条 */}
-        <div className="fixed left-0 right-0 h-1 bg-zen-bg-light" style={{ top: 'env(safe-area-inset-top, 0)' }}>
+        <div className="fixed left-0 right-0 h-0.5 bg-zen-bg-light/50" style={{ top: 'env(safe-area-inset-top, 0)' }}>
           <motion.div 
-            className="h-full bg-zen-accent/60"
-            style={{ width: `${roundProgress}%` }}
+            className="h-full"
+            style={{ 
+              width: `${roundProgress}%`,
+              background: 'linear-gradient(90deg, rgba(125, 212, 168, 0.4) 0%, rgba(125, 212, 168, 0.8) 100%)'
+            }}
           />
         </div>
 
         {/* 控制按钮 */}
         <div className="top-bar flex justify-between items-center">
-          <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
-          <div className="flex gap-4">
-            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">
+          <div className="text-zen-text-dim text-xs font-light">第 {round}/{totalRounds} 轮</div>
+          <div className="flex gap-3">
+            <button 
+              onClick={togglePause} 
+              className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors"
+            >
               ⏸️
             </button>
-            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-xl px-2">
+            <button 
+              onClick={exitTraining} 
+              className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors"
+            >
               ✕
             </button>
           </div>
         </div>
 
-        <div className="text-center">
-          <div className="text-4xl font-light text-zen-text mb-6">{breathText}</div>
+        <div className="text-center flex-1 flex flex-col justify-center">
+          {/* 呼吸状态文字 - 更大更醒目 */}
+          <motion.div 
+            key={breathText}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl font-extralight text-zen-text mb-8 tracking-wider"
+          >
+            {breathText}
+          </motion.div>
           
           <BreathingCircle isBreathingIn={breathText === '吸气'} isActive={true} />
           
-          <div className="mt-8 w-64 mx-auto">
-            <div className="flex justify-between text-sm text-zen-text-dim mb-2">
-              <span>呼吸次数</span>
-              <span className="text-zen-accent">{breathCount} / {breathsPerRound}</span>
-            </div>
-            <div className="h-2 bg-zen-bg-light rounded-full overflow-hidden">
+          {/* 进度显示 - 更简洁 */}
+          <div className="mt-10 flex items-center justify-center gap-2">
+            <span className="text-3xl font-light text-zen-accent">{breathCount}</span>
+            <span className="text-zen-text-dim text-lg">/</span>
+            <span className="text-zen-text-dim text-lg">{breathsPerRound}</span>
+          </div>
+          
+          {/* 进度条 - 更圆润 */}
+          <div className="mt-4 w-48 mx-auto">
+            <div className="h-1.5 bg-zen-bg-light/50 rounded-full overflow-hidden">
               <motion.div 
-                className="h-full bg-zen-accent/60 rounded-full"
-                style={{ width: `${progress}%` }}
+                className="h-full rounded-full"
+                style={{ 
+                  width: `${progress}%`,
+                  background: 'linear-gradient(90deg, rgba(125, 212, 168, 0.4) 0%, rgba(125, 212, 168, 0.7) 100%)'
+                }}
               />
             </div>
           </div>
@@ -559,25 +583,44 @@ function App() {
     return (
       <div className="fullscreen-page bg-zen-bg p-4">
         <div className="top-bar flex justify-between items-center">
-          <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
-          <div className="flex gap-4">
-            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">⏸️</button>
-            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-xl px-2">✕</button>
+          <div className="text-zen-text-dim text-xs font-light">第 {round}/{totalRounds} 轮</div>
+          <div className="flex gap-3">
+            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-gold/10 transition-colors">⏸️</button>
+            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-gold/10 transition-colors">✕</button>
           </div>
         </div>
 
-        <div className="text-center">
-          <div className="text-4xl font-light text-zen-text mb-6">憋气</div>
+        <div className="text-center flex-1 flex flex-col justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-5xl font-extralight text-zen-text mb-6 tracking-wider"
+          >
+            憋气
+          </motion.div>
+          
           <BreathingCircle isBreathingIn={false} isActive={false} />
           
           <div className="mt-8">
-            <Timer time={holdTime} label="憋气时长" />
+            <Timer time={holdTime} label="" />
           </div>
           
-          <button onClick={endHold} className="mt-10 py-4 px-10 bg-zen-gold/20 hover:bg-zen-gold/30 text-zen-gold rounded-2xl transition-all font-medium text-lg">
+          <motion.button 
+            onClick={endHold} 
+            className="mt-10 py-4 px-10 text-zen-gold rounded-2xl font-light text-lg"
+            style={{
+              background: 'rgba(251, 191, 36, 0.1)',
+              boxShadow: '0 0 30px rgba(251, 191, 36, 0.15)'
+            }}
+            whileHover={{ 
+              background: 'rgba(251, 191, 36, 0.15)',
+              boxShadow: '0 0 40px rgba(251, 191, 36, 0.2)'
+            }}
+            whileTap={{ scale: 0.95 }}
+          >
             结束憋气
-          </button>
-          <p className="mt-4 text-sm text-zen-text-dim">感觉不舒服时随时可以结束</p>
+          </motion.button>
+          <p className="mt-3 text-xs text-zen-text-dim">感觉不舒服时随时结束</p>
         </div>
       </div>
     )
@@ -588,15 +631,21 @@ function App() {
     return (
       <div className="fullscreen-page bg-zen-bg p-4">
         <div className="top-bar flex justify-between items-center">
-          <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
-          <div className="flex gap-4">
-            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">⏸️</button>
-            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-xl px-2">✕</button>
+          <div className="text-zen-text-dim text-xs font-light">第 {round}/{totalRounds} 轮</div>
+          <div className="flex gap-3">
+            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors">⏸️</button>
+            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors">✕</button>
           </div>
         </div>
 
-        <div className="text-center">
-          <div className="text-3xl font-light text-zen-text mb-4">深吸一口气</div>
+        <div className="text-center flex-1 flex flex-col justify-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-extralight text-zen-text mb-4"
+          >
+            深吸一口气
+          </motion.div>
           <div className="text-xl text-zen-text-dim mb-8">然后憋住 {recoveryTime} 秒</div>
           <BreathingCircle isBreathingIn={true} isActive={true} />
           <div className="mt-8">
