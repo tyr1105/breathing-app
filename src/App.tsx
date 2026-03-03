@@ -306,7 +306,7 @@ function App() {
   // 空闲状态
   if (phase === 'idle') {
     return (
-      <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+      <div className="fullscreen-page bg-zen-bg p-4">
         <div className="text-center animate-fade-in">
           {stats.consecutiveDays > 0 && (
             <motion.div 
@@ -354,7 +354,7 @@ function App() {
   // 安全提示
   if (phase === 'safety-check') {
     return (
-      <div className="min-h-screen bg-zen-bg flex items-center justify-center">
+      <div className="fullscreen-page bg-zen-bg">
         <SafetyModal 
           onConfirm={() => setPhase('breathing')} 
           onSkip={() => {
@@ -370,7 +370,7 @@ function App() {
   // 暂停状态
   if (phase === 'paused') {
     return (
-      <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+      <div className="fullscreen-page bg-zen-bg p-4">
         <div className="text-center">
           <div className="text-6xl mb-6">⏸️</div>
           <div className="text-3xl font-light text-zen-text mb-2">训练已暂停</div>
@@ -401,7 +401,7 @@ function App() {
     const roundProgress = ((round - 1) / totalRounds) * 100 + (progress / totalRounds)
     
     return (
-      <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+      <div className="fullscreen-page bg-zen-bg p-4">
         {/* 顶部进度条 */}
         <div className="fixed top-0 left-0 right-0 h-1 bg-zen-bg-light">
           <motion.div 
@@ -448,7 +448,7 @@ function App() {
   // 憋气阶段
   if (phase === 'hold') {
     return (
-      <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+      <div className="fullscreen-page bg-zen-bg p-4">
         <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
           <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
           <div className="flex gap-4">
@@ -477,7 +477,7 @@ function App() {
   // 恢复呼吸
   if (phase === 'recovery') {
     return (
-      <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4">
+      <div className="fullscreen-page bg-zen-bg p-4">
         <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
           <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
           <div className="flex gap-4">
