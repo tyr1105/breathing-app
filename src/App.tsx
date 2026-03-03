@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { StatusBar } from '@capacitor/status-bar'
+import { StatusBar, Style } from '@capacitor/status-bar'
 import { App as CapApp } from '@capacitor/app'
 import { BreathingCircle } from './components/breathing/BreathingCircle'
 import { SafetyModal } from './components/safety/SafetyModal'
@@ -37,11 +37,16 @@ function App() {
 
   const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled, skipSafetyWarning } = settings
 
-  // 状态栏适配 - 隐藏状态栏实现全屏
+  // 状态栏适配 - 透明状态栏 + safe-area 保护
   useEffect(() => {
     const setupStatusBar = async () => {
       try {
-        await StatusBar.hide()
+        // 让内容延伸到状态栏下方，但通过 safe-area 保护内容不被遮挡
+        await StatusBar.setOverlaysWebView({ overlay: true })
+        // 设置深色状态栏（浅色文字）
+        await StatusBar.setStyle({ style: Style.Dark })
+        // 状态栏背景色（透明时会被 overlay 忽略，但保留作为 fallback）
+        await StatusBar.setBackgroundColor({ color: '#0a0f1a' })
       } catch {
         // Web 环境忽略错误
       }
@@ -310,7 +315,8 @@ function App() {
         <div className="text-center animate-fade-in">
           {stats.consecutiveDays > 0 && (
             <motion.div 
-              className="absolute top-8 left-1/2 -translate-x-1/2 bg-zen-accent/10 px-4 py-2 rounded-full"
+              className="absolute left-1/2 -translate-x-1/2 bg-zen-accent/10 px-4 py-2 rounded-full"
+              style={{ top: 'calc(env(safe-area-inset-top, 0px) + 2rem)' }}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -403,7 +409,7 @@ function App() {
     return (
       <div className="fullscreen-page bg-zen-bg p-4">
         {/* 顶部进度条 */}
-        <div className="fixed top-0 left-0 right-0 h-1 bg-zen-bg-light">
+        <div className="fixed left-0 right-0 h-1 bg-zen-bg-light" style={{ top: 'env(safe-area-inset-top, 0)' }}>
           <motion.div 
             className="h-full bg-zen-accent/60"
             style={{ width: `${roundProgress}%` }}
@@ -411,7 +417,7 @@ function App() {
         </div>
 
         {/* 控制按钮 */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+        <div className="top-bar flex justify-between items-center">
           <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
           <div className="flex gap-4">
             <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">
@@ -449,7 +455,7 @@ function App() {
   if (phase === 'hold') {
     return (
       <div className="fullscreen-page bg-zen-bg p-4">
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+        <div className="top-bar flex justify-between items-center">
           <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
           <div className="flex gap-4">
             <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">⏸️</button>
@@ -478,7 +484,7 @@ function App() {
   if (phase === 'recovery') {
     return (
       <div className="fullscreen-page bg-zen-bg p-4">
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+        <div className="top-bar flex justify-between items-center">
           <div className="text-zen-text-dim text-sm">第 {round}/{totalRounds} 轮</div>
           <div className="flex gap-4">
             <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-xl px-2">⏸️</button>
