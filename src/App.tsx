@@ -647,6 +647,32 @@ function App() {
           
           <BreathingCircle isBreathingIn={breathText === '吸气'} isActive={true} />
           
+          {/* 呼吸节奏指示器 - 新增 */}
+          <motion.div 
+            className="mt-6 flex justify-center gap-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex gap-1.5">
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 rounded-full"
+                  style={{
+                    background: i < (breathText === '吸气' ? 5 : 3) 
+                      ? 'rgba(125, 212, 168, 0.8)' 
+                      : 'rgba(125, 212, 168, 0.2)'
+                  }}
+                  animate={{
+                    scale: i < (breathText === '吸气' ? 5 : 3) ? 1.2 : 1,
+                  }}
+                  transition={{ duration: 0.2, delay: i * 0.05 }}
+                />
+              ))}
+            </div>
+          </motion.div>
+          
           {/* 进度显示 - 更简洁 */}
           <div className="mt-10 flex items-center justify-center gap-2">
             <span className="text-3xl font-light text-zen-accent">{breathCount}</span>
