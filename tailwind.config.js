@@ -7,17 +7,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        'zen-bg': '#0a0f1a',
-        'zen-bg-light': '#111827',
-        'zen-text': '#e5e7eb',
-        'zen-text-dim': '#6b7280',
-        'zen-accent': '#6ee7b7',
-        'zen-accent-dim': '#34d399',
-        'zen-gold': '#fbbf24',
+        // 背景
+        'zen-bg': 'var(--bg-primary)',
+        'zen-bg-light': 'var(--bg-secondary)',
+        'zen-bg-tertiary': 'var(--bg-tertiary)',
+        
+        // 强调色
+        'zen-accent': 'var(--accent-secondary)',
+        'zen-accent-primary': 'var(--accent-primary)',
+        'zen-accent-secondary': 'var(--accent-secondary)',
+        
+        // 文字
+        'zen-text': 'var(--text-primary)',
+        'zen-text-dim': 'var(--text-secondary)',
+        'zen-text-muted': 'var(--text-muted)',
+        
+        // 状态
+        'zen-gold': 'var(--warning)',
+        'zen-success': 'var(--success)',
+        'zen-error': 'var(--error)',
+      },
+      fontFamily: {
+        'heading': ['Lora', 'PingFang SC', 'serif'],
+        'body': ['Raleway', '-apple-system', 'sans-serif'],
       },
       animation: {
-        'fade-in': 'fadeIn 0.5s ease-out',
+        'fade-in': 'fadeIn 0.4s ease-out',
         'breathe': 'breathe 4s ease-in-out infinite',
+        'pulse-soft': 'pulse 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -28,6 +45,22 @@ export default {
           '0%, 100%': { opacity: '0.3', transform: 'scale(1)' },
           '50%': { opacity: '0.6', transform: 'scale(1.05)' },
         },
+        pulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
+        },
+      },
+      borderRadius: {
+        'sm': 'var(--radius-sm)',
+        'md': 'var(--radius-md)',
+        'lg': 'var(--radius-lg)',
+        'xl': 'var(--radius-xl)',
+      },
+      boxShadow: {
+        'neu': 'var(--shadow-raised)',
+        'neu-inset': 'var(--shadow-inset)',
+        'glow': 'var(--shadow-glow)',
+        'glow-accent': 'var(--shadow-glow-accent)',
       },
     },
   },
