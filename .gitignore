@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Test coverage
+coverage
+
+# Build artifacts
+*.apk
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
