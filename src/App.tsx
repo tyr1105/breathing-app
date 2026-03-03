@@ -8,6 +8,8 @@ import { Timer } from './components/breathing/Timer'
 import { TrainingSummary } from './components/summary/TrainingSummary'
 import { SettingsModal } from './components/settings/SettingsModal'
 import { HistoryPage } from './components/history/HistoryPage'
+import { AchievementsPage } from './components/achievements/AchievementsPage'
+import { TabBar, type TabType } from './components/layout/TabBar'
 import { audioManager, vibrate } from './utils/audio'
 import { settingsManager, historyManager, statsManager } from './utils/storage'
 import type { Settings } from './utils/storage'
@@ -46,6 +48,7 @@ function formatTime(date: Date): string {
 function App() {
   const [page, setPage] = useState<Page>('main')
   const [phase, setPhase] = useState<TrainingPhase>('idle')
+  const [activeTab, setActiveTab] = useState<TabType>('home')
   const [round, setRound] = useState(1)
   const [breathCount, setBreathCount] = useState(0)
   const [holdTime, setHoldTime] = useState(0)
@@ -312,150 +315,165 @@ function App() {
 
   const stats = statsManager.get()
 
-  // 历史页面
-  if (page === 'history') {
-    return <HistoryPage onBack={() => setPage('main')} />
-  }
-
-  // 设置页面
-  if (page === 'settings') {
-    return (
-      <SettingsModal
-        settings={settings}
-        onSave={handleSaveSettings}
-        onClose={() => setPage('main')}
-      />
-    )
-  }
-
   // 获取最近训练记录
   const recentSessions = useMemo(() => {
     const history = historyManager.getAll()
     return history.slice(0, 2)
   }, [phase])
 
-  // 空闲状态
+  // 空闲状态 - 使用 Tab 导航
   if (phase === 'idle') {
     return (
-      <div className="fullscreen-page bg-zen-bg p-4">
-        <div className="text-center animate-fade-in w-full max-w-md mx-auto">
-          {/* 顶部状态栏 */}
-          <div className="flex justify-between items-center mb-6" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-            {stats.consecutiveDays > 0 && (
-              <motion.div 
-                className="bg-zen-accent/10 px-3 py-1.5 rounded-full"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
-                <span className="text-zen-accent text-xs">🔥 {stats.consecutiveDays}天</span>
-              </motion.div>
-            )}
-            <div className="flex-1" />
-            <button onClick={() => setPage('history')} className="p-2 text-zen-text-dim hover:text-zen-text transition-colors">
-              <span className="text-xl">📊</span>
-            </button>
-            <button onClick={() => setPage('settings')} className="p-2 text-zen-text-dim hover:text-zen-text transition-colors ml-2">
-              <span className="text-xl">⚙️</span>
-            </button>
-          </div>
-          
-          {/* 个性化问候 */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-2"
-          >
-            <p className="text-zen-text-dim text-sm">{getGreeting()}</p>
-          </motion.div>
-          
-          {/* 主标题 */}
-          <motion.h1 
-            className="text-3xl font-light text-zen-text mb-1"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            冰人呼吸法
-          </motion.h1>
-          <motion.p 
-            className="text-zen-text-dim text-xs mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            Wim Hof Method
-          </motion.p>
-          
-          {/* 呼吸圆圈 */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            <BreathingCircle isBreathingIn={true} isActive={false} />
-          </motion.div>
-          
-          {/* 开始按钮 */}
-          <motion.button
-            onClick={startTraining}
-            className="mt-8 py-4 px-12 bg-zen-accent/20 hover:bg-zen-accent/30 
-                       text-zen-accent rounded-2xl transition-all font-medium text-lg
-                       active:scale-95"
-            style={{
-              boxShadow: '0 4px 30px rgba(125, 212, 168, 0.2)',
-            }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            whileHover={{ boxShadow: '0 6px 40px rgba(125, 212, 168, 0.3)' }}
-            whileTap={{ scale: 0.95, boxShadow: '0 2px 20px rgba(125, 212, 168, 0.15)' }}
-          >
-            开始训练
-          </motion.button>
-          
-          <motion.p 
-            className="mt-4 text-xs text-zen-text-dim"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            {totalRounds}轮 × {breathsPerRound}次呼吸
-          </motion.p>
+      <div className="min-h-screen bg-zen-bg flex flex-col">
+        {/* 主内容区 */}
+        <div className="flex-1 pb-20">
+          {/* 首页 Tab */}
+          {activeTab === 'home' && (
+            <div className="fullscreen-page p-4">
+              <div className="text-center animate-fade-in w-full max-w-md mx-auto">
+                {/* 顶部状态栏 */}
+                <div className="flex justify-between items-center mb-6" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+                  {stats.consecutiveDays > 0 && (
+                    <motion.div 
+                      className="bg-zen-accent/10 px-3 py-1.5 rounded-full"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                    >
+                      <span className="text-zen-accent text-xs">🔥 {stats.consecutiveDays}天</span>
+                    </motion.div>
+                  )}
+                  <div className="flex-1" />
+                </div>
+                
+                {/* 个性化问候 */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="mb-2"
+                >
+                  <p className="text-zen-text-dim text-sm">{getGreeting()}</p>
+                </motion.div>
+                
+                {/* 主标题 */}
+                <motion.h1 
+                  className="text-3xl font-light text-zen-text mb-1"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  冰人呼吸法
+                </motion.h1>
+                <motion.p 
+                  className="text-zen-text-dim text-xs mb-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  Wim Hof Method
+                </motion.p>
+                
+                {/* 呼吸圆圈 */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                >
+                  <BreathingCircle isBreathingIn={true} isActive={false} />
+                </motion.div>
+                
+                {/* 开始按钮 */}
+                <motion.button
+                  onClick={startTraining}
+                  className="mt-8 py-4 px-12 bg-zen-accent/20 hover:bg-zen-accent/30 
+                             text-zen-accent rounded-2xl transition-all font-medium text-lg
+                             active:scale-95"
+                  style={{
+                    boxShadow: '0 4px 30px rgba(125, 212, 168, 0.2)',
+                  }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  whileHover={{ boxShadow: '0 6px 40px rgba(125, 212, 168, 0.3)' }}
+                  whileTap={{ scale: 0.95, boxShadow: '0 2px 20px rgba(125, 212, 168, 0.15)' }}
+                >
+                  开始训练
+                </motion.button>
+                
+                <motion.p 
+                  className="mt-4 text-xs text-zen-text-dim"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  {totalRounds}轮 × {breathsPerRound}次呼吸
+                </motion.p>
 
-          {/* 最近训练 */}
-          {recentSessions.length > 0 && (
-            <motion.div
-              className="mt-8 text-left"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-            >
-              <p className="text-xs text-zen-text-dim mb-2 px-1">最近训练</p>
-              <div className="space-y-2">
-                {recentSessions.map((session, index) => (
+                {/* 最近训练 */}
+                {recentSessions.length > 0 && (
                   <motion.div
-                    key={session.id}
-                    className="bg-zen-bg-light/50 rounded-xl p-3 border border-zen-accent/5"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 + index * 0.1 }}
+                    className="mt-8 text-left"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
                   >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <span className="text-zen-text text-sm">{formatTime(new Date(session.date))}</span>
-                        <span className="text-zen-text-dim text-xs ml-2">{session.rounds}轮</span>
-                      </div>
-                      <div className="text-zen-accent text-xs">
-                        {Math.floor(session.totalHoldTime / 60)}:{String(session.totalHoldTime % 60).padStart(2, '0')} 憋气
-                      </div>
+                    <p className="text-xs text-zen-text-dim mb-2 px-1">最近训练</p>
+                    <div className="space-y-2">
+                      {recentSessions.map((session, index) => (
+                        <motion.div
+                          key={session.id}
+                          className="bg-zen-bg-light/50 rounded-xl p-3 border border-zen-accent/5"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.7 + index * 0.1 }}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <span className="text-zen-text text-sm">{formatTime(new Date(session.date))}</span>
+                              <span className="text-zen-text-dim text-xs ml-2">{session.rounds}轮</span>
+                            </div>
+                            <div className="text-zen-accent text-xs">
+                              {Math.floor(session.totalHoldTime / 60)}:{String(session.totalHoldTime % 60).padStart(2, '0')} 憋气
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
                   </motion.div>
-                ))}
+                )}
               </div>
-            </motion.div>
+            </div>
+          )}
+
+          {/* 数据 Tab */}
+          {activeTab === 'stats' && (
+            <HistoryPage onBack={() => setActiveTab('home')} />
+          )}
+
+          {/* 成就 Tab */}
+          {activeTab === 'achievements' && (
+            <AchievementsPage 
+              onBack={() => setActiveTab('home')} 
+              unlockedIds={[]} 
+            />
+          )}
+
+          {/* 设置 Tab */}
+          {activeTab === 'settings' && (
+            <SettingsModal
+              settings={settings}
+              onSave={handleSaveSettings}
+              onClose={() => setActiveTab('home')}
+            />
           )}
         </div>
+
+        {/* TabBar */}
+        <TabBar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onStartTraining={startTraining}
+        />
       </div>
     )
   }
