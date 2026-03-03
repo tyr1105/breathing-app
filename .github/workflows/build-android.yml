@@ -40,8 +40,17 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
       
+      - name: Get version
+        id: version
+        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      
+      - name: Rename APK
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             android/app/build/outputs/apk/debug/breathing-app-v${{ steps.version.outputs.VERSION }}.apk
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: breathing-app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: breathing-app-v${{ steps.version.outputs.VERSION }}
+          path: android/app/build/outputs/apk/debug/breathing-app-v${{ steps.version.outputs.VERSION }}.apk
