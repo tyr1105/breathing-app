@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { StatusBar } from '@capacitor/status-bar'
+import { App as CapApp } from '@capacitor/app'
 import { BreathingCircle } from './components/breathing/BreathingCircle'
 import { SafetyModal } from './components/safety/SafetyModal'
 import { Timer } from './components/breathing/Timer'
@@ -34,6 +36,96 @@ function App() {
   const [pausedPhase, setPausedPhase] = useState<TrainingPhase | null>(null)
 
   const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled, skipSafetyWarning } = settings
+
+  // 状态栏适配 - 隐藏状态栏实现全屏
+  useEffect(() => {
+    const setupStatusBar = async () => {
+      try {
+        await StatusBar.hide()
+      } catch {
+        // Web 环境忽略错误
+      }
+    }
+    setupStatusBar()
+  }, [])
+
+  // Android 返回按钮适配
+  useEffect(() => {
+    let listener: { remove: () => void } | null = null
+    
+    const setupBackButton = async () => {
+      try {
+        listener = await CapApp.addListener('backButton', handleBackButton)
+      } catch {
+        // Web 环境忽略错误
+      }
+    }
+    
+    const handleBackButton = async () => {
+      const currentPhase = phase
+      const currentPage = page
+      
+      // 如果在设置或历史页面，返回主页
+      if (currentPage === 'settings' || currentPage === 'history') {
+        setPage('main')
+        return
+      }
+      
+      // 根据 phase 做不同处理
+      switch (currentPhase) {
+        case 'paused':
+          // 暂停状态，显示退出确认
+          if (confirm('确定要退出训练吗？当前进度将不会保存。')) {
+            setPhase('idle')
+            setRound(1)
+            setBreathCount(0)
+            setHoldTime(0)
+            setRecoveryTime(settingRecoveryTime)
+            setRoundHoldTimes([])
+            setBreathText('吸气')
+            setPausedPhase(null)
+          }
+          return
+          
+        case 'safety-check':
+          // 安全提示页面，返回空闲
+          setPhase('idle')
+          return
+          
+        case 'complete':
+          // 完成页面，重置到空闲
+          setPhase('idle')
+          setRound(1)
+          setBreathCount(0)
+          setHoldTime(0)
+          setRecoveryTime(settingRecoveryTime)
+          setRoundHoldTimes([])
+          setBreathText('吸气')
+          setPausedPhase(null)
+          return
+          
+        case 'breathing':
+        case 'hold':
+        case 'recovery':
+          // 训练中，切换到暂停
+          setPausedPhase(currentPhase)
+          setPhase('paused')
+          return
+          
+        case 'idle':
+        default:
+          // 空闲状态，退出应用
+          await CapApp.exitApp()
+          return
+      }
+    }
+    
+    setupBackButton()
+    
+    return () => {
+      listener?.remove()
+    }
+  }, [page, phase, settingRecoveryTime])
 
   // 辅助函数
   const playSound = useCallback((type: 'inhale' | 'exhale' | 'holdStart' | 'recoveryTick' | 'complete') => {
