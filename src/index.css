@@ -253,11 +253,10 @@ button:active {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100%; /* 改为相对高度，适应父容器 */
   width: 100%;
   padding-top: max(env(safe-area-inset-top), 24px);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }

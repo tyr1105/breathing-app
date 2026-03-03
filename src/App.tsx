@@ -22,6 +22,7 @@ type TrainingPhase =
   | 'recovery'
   | 'complete'
   | 'paused'
+  | 'countdown'  // 新增：倒计时状态
 
 type Page = 'main' | 'settings' | 'history'
 
@@ -57,6 +58,7 @@ function App() {
   const [breathText, setBreathText] = useState<'吸气' | '呼气'>('吸气')
   const [settings, setSettings] = useState<Settings>(settingsManager.get())
   const [pausedPhase, setPausedPhase] = useState<TrainingPhase | null>(null)
+  const [countdown, setCountdown] = useState(3) // 倒计时计数器
 
   const { totalRounds, breathsPerRound, recoveryTime: settingRecoveryTime, soundEnabled, vibrationEnabled, skipSafetyWarning } = settings
 
@@ -179,13 +181,37 @@ function App() {
   // 暂停/恢复
   const togglePause = useCallback(() => {
     if (phase === 'paused' && pausedPhase) {
-      setPhase(pausedPhase)
-      setPausedPhase(null)
+      // 从暂停恢复：开始倒计时
+      setCountdown(3)
+      setPhase('countdown')
+    } else if (phase === 'countdown') {
+      // 倒计时期间也可以暂停
+      setPhase('paused')
     } else if (phase !== 'idle' && phase !== 'complete' && phase !== 'safety-check') {
       setPausedPhase(phase)
       setPhase('paused')
     }
   }, [phase, pausedPhase])
+
+  // 倒计时逻辑
+  useEffect(() => {
+    if (phase !== 'countdown') return
+    
+    if (countdown <= 0) {
+      // 倒计时结束，恢复训练
+      if (pausedPhase) {
+        setPhase(pausedPhase)
+        setPausedPhase(null)
+      }
+      return
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown(prev => prev - 1)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [phase, countdown, pausedPhase])
 
   // 呼吸循环
   useEffect(() => {
@@ -499,16 +525,26 @@ function App() {
     return (
       <div className="fullscreen-page bg-zen-bg p-4">
         <div className="text-center">
-          <div className="text-6xl mb-6">⏸️</div>
+          <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center rounded-full bg-zen-accent/10">
+            <svg className="w-12 h-12 text-zen-accent" fill="currentColor" viewBox="0 0 24 24">
+              <rect x="6" y="4" width="4" height="16" rx="1" />
+              <rect x="14" y="4" width="4" height="16" rx="1" />
+            </svg>
+          </div>
           <div className="text-3xl font-light text-zen-text mb-2">训练已暂停</div>
           <p className="text-zen-text-dim mb-8">点击继续恢复训练</p>
           
           <button
             onClick={togglePause}
-            className="py-4 px-10 bg-zen-accent/20 hover:bg-zen-accent/30 
-                       text-zen-accent rounded-2xl transition-all font-medium text-lg"
+            className="w-32 h-16 py-4 px-10 bg-zen-accent/20 hover:bg-zen-accent/30 active:bg-zen-accent/40
+                       text-zen-accent rounded-2xl transition-all font-medium text-lg
+                       flex items-center justify-center mx-auto gap-2"
+            style={{ touchAction: 'manipulation' }}
           >
-            继续训练
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <polygon points="5,3 19,12 5,21" />
+            </svg>
+            继续
           </button>
           
           <button
@@ -516,6 +552,35 @@ function App() {
             className="block mx-auto mt-6 text-zen-text-dim hover:text-zen-text"
           >
             退出训练
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // 倒计时状态
+  if (phase === 'countdown') {
+    return (
+      <div className="fullscreen-page bg-zen-bg p-4">
+        <div className="text-center">
+          <motion.div
+            key={countdown}
+            initial={{ scale: 1.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-9xl font-extralight text-zen-accent mb-8"
+          >
+            {countdown}
+          </motion.div>
+          
+          <div className="text-xl text-zen-text mb-8">准备继续...</div>
+          
+          <button
+            onClick={togglePause}
+            className="text-zen-text-dim hover:text-zen-text text-sm underline"
+          >
+            暂停
           </button>
         </div>
       </div>
@@ -546,15 +611,25 @@ function App() {
           <div className="flex gap-3">
             <button 
               onClick={togglePause} 
-              className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors"
+              className="w-14 h-14 flex items-center justify-center rounded-2xl bg-zen-accent/10 hover:bg-zen-accent/20 active:bg-zen-accent/30 transition-all"
+              style={{ touchAction: 'manipulation' }}
+              aria-label="暂停训练"
             >
-              ⏸️
+              <svg className="w-7 h-7 text-zen-accent" fill="currentColor" viewBox="0 0 24 24">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
             </button>
             <button 
               onClick={exitTraining} 
-              className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors"
+              className="w-14 h-14 flex items-center justify-center rounded-2xl bg-zen-accent/10 hover:bg-zen-accent/20 active:bg-zen-accent/30 transition-all"
+              style={{ touchAction: 'manipulation' }}
+              aria-label="退出训练"
             >
-              ✕
+              <svg className="w-7 h-7 text-zen-accent" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
           </div>
         </div>
@@ -603,8 +678,28 @@ function App() {
         <div className="top-bar flex justify-between items-center">
           <div className="text-zen-text-dim text-xs font-light">第 {round}/{totalRounds} 轮</div>
           <div className="flex gap-3">
-            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-gold/10 transition-colors">⏸️</button>
-            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-gold/10 transition-colors">✕</button>
+            <button 
+              onClick={togglePause}
+              className="w-14 h-14 flex items-center justify-center rounded-2xl bg-zen-gold/10 hover:bg-zen-gold/20 active:bg-zen-gold/30 transition-all"
+              style={{ touchAction: 'manipulation' }}
+              aria-label="暂停训练"
+            >
+              <svg className="w-7 h-7 text-zen-gold" fill="currentColor" viewBox="0 0 24 24">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            </button>
+            <button 
+              onClick={exitTraining}
+              className="w-14 h-14 flex items-center justify-center rounded-2xl bg-zen-gold/10 hover:bg-zen-gold/20 active:bg-zen-gold/30 transition-all"
+              style={{ touchAction: 'manipulation' }}
+              aria-label="退出训练"
+            >
+              <svg className="w-7 h-7 text-zen-gold" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -651,8 +746,28 @@ function App() {
         <div className="top-bar flex justify-between items-center">
           <div className="text-zen-text-dim text-xs font-light">第 {round}/{totalRounds} 轮</div>
           <div className="flex gap-3">
-            <button onClick={togglePause} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors">⏸️</button>
-            <button onClick={exitTraining} className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 rounded-lg hover:bg-zen-accent/10 transition-colors">✕</button>
+            <button 
+              onClick={togglePause}
+              className="w-14 h-14 flex items-center justify-center rounded-2xl bg-zen-accent/10 hover:bg-zen-accent/20 active:bg-zen-accent/30 transition-all"
+              style={{ touchAction: 'manipulation' }}
+              aria-label="暂停训练"
+            >
+              <svg className="w-7 h-7 text-zen-accent" fill="currentColor" viewBox="0 0 24 24">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            </button>
+            <button 
+              onClick={exitTraining}
+              className="w-14 h-14 flex items-center justify-center rounded-2xl bg-zen-accent/10 hover:bg-zen-accent/20 active:bg-zen-accent/30 transition-all"
+              style={{ touchAction: 'manipulation' }}
+              aria-label="退出训练"
+            >
+              <svg className="w-7 h-7 text-zen-accent" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
         </div>
 
