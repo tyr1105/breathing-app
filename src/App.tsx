@@ -427,6 +427,7 @@ function App() {
                   className="mt-8 py-4 px-12 bg-zen-accent/20 hover:bg-zen-accent/30 
                              text-zen-accent rounded-2xl transition-all font-medium text-lg
                              active:scale-95"
+                  aria-label="开始呼吸训练"
                   style={{
                     boxShadow: '0 4px 30px rgba(125, 212, 168, 0.2)',
                   }}

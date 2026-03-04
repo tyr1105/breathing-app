@@ -42,10 +42,10 @@
   --error: #ef4444;
   --info: #3b82f6;
   
-  /* 文字层次 */
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
+  /* 文字层次（WCAG AA 对比度验证） */
+  --text-primary: #f8fafc;        /* 对比度 18.31:1 ✅ */
+  --text-secondary: #cbd5e1;      /* 对比度 12.90:1 ✅ */
+  --text-muted: #73839a;          /* 对比度 4.96:1 ✅（修复前：#64748b = 4.03:1 ❌）*/
   --text-disabled: #475569;
   
   /* 光晕效果 */

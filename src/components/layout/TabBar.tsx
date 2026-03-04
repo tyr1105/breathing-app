@@ -155,6 +155,7 @@ function TabItem({
             color: isActive ? '#7dd4a8' : '#9ca3af',
             opacity: isActive ? 1 : 0.5,
           }}
+          aria-hidden="true"
         />
         <span 
           className="text-[10px] transition-all duration-200"
