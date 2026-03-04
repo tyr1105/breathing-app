@@ -73,20 +73,28 @@ export function AchievementsPage({ onBack, unlockedIds }: AchievementsPageProps)
   const unlockedCount = achievements.filter(a => unlockedIds.includes(a.id)).length
 
   return (
-    <div className="h-full overflow-y-auto bg-zen-bg p-4 sm:p-6">
-      <div className="max-w-md mx-auto">
-        <div className="flex items-center justify-between mb-6 sticky top-0 bg-zen-bg py-2 z-10">
-          <button onClick={onBack} className="text-zen-text-dim hover:text-zen-text text-lg">← 返回</button>
-          <h2 className="text-xl font-semibold text-zen-text">成就</h2>
-          <div className="w-12" />
+    <div className="h-full overflow-y-auto bg-zen-bg">
+      <div className="max-w-md mx-auto px-4 sm:px-6">
+        {/* 固定头部 - 修复遮挡问题 */}
+        <div className="sticky top-0 bg-zen-bg z-10 py-4 border-b border-zen-accent/10">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={onBack} 
+              className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 -ml-2"
+            >
+              ← 返回
+            </button>
+            <h2 className="text-xl font-semibold text-zen-text">成就</h2>
+            <div className="w-12" />
+          </div>
         </div>
 
-        <div className="text-center mb-6">
+        <div className="text-center py-6">
           <div className="text-3xl font-light text-zen-gold">{unlockedCount} / {achievements.length}</div>
           <div className="text-zen-text-dim text-sm">已解锁</div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pb-4">
+        <div className="grid grid-cols-2 gap-4 pb-6">
           {achievements.map((achievement, index) => {
             const isUnlocked = unlockedIds.includes(achievement.id)
             return (

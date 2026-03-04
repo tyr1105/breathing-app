@@ -489,21 +489,25 @@ function App() {
             <HistoryPage onBack={() => setActiveTab('home')} />
           )}
 
-          {/* 成就 Tab */}
+          {/* 成就 Tab - 修复滚动和遮挡问题 */}
           {activeTab === 'achievements' && (
-            <AchievementsPage 
-              onBack={() => setActiveTab('home')} 
-              unlockedIds={[]} 
-            />
+            <div className="h-full overflow-hidden">
+              <AchievementsPage 
+                onBack={() => setActiveTab('home')} 
+                unlockedIds={[]} 
+              />
+            </div>
           )}
 
-          {/* 设置 Tab */}
+          {/* 设置 Tab - 修复滚动和遮挡问题 */}
           {activeTab === 'settings' && (
-            <SettingsModal
-              settings={settings}
-              onSave={handleSaveSettings}
-              onClose={() => setActiveTab('home')}
-            />
+            <div className="h-full overflow-hidden">
+              <SettingsModal
+                settings={settings}
+                onSave={handleSaveSettings}
+                onClose={() => setActiveTab('home')}
+              />
+            </div>
           )}
         </div>
 

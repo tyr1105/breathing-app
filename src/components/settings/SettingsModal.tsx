@@ -19,22 +19,24 @@ export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps)
   }, [localSettings, onSave])
 
   return (
-    <div className="h-full overflow-y-auto bg-zen-bg p-4 sm:p-6">
-      <div className="max-w-md mx-auto w-full">
-        {/* 头部 */}
-        <div className="flex items-center justify-between mb-8 sticky top-0 bg-zen-bg py-2 z-10">
-          <button
-            onClick={onClose}
-            className="text-zen-text-dim hover:text-zen-text text-lg"
-          >
-            ← 返回
-          </button>
-          <h2 className="text-xl font-semibold text-zen-text">设置</h2>
-          <div className="w-12" />
+    <div className="h-full overflow-y-auto bg-zen-bg">
+      <div className="max-w-md mx-auto w-full px-4 sm:px-6">
+        {/* 固定头部 - 修复遮挡问题 */}
+        <div className="sticky top-0 bg-zen-bg z-10 py-4 border-b border-zen-accent/10">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={onClose}
+              className="text-zen-text-dim hover:text-zen-text text-lg px-2 py-1 -ml-2"
+            >
+              ← 返回
+            </button>
+            <h2 className="text-xl font-semibold text-zen-text">设置</h2>
+            <div className="w-12" />
+          </div>
         </div>
         
         {/* 训练参数 */}
-        <div className="bg-zen-bg-light rounded-2xl p-6 border border-zen-accent/10 mb-6">
+        <div className="bg-zen-bg-light rounded-2xl p-6 border border-zen-accent/10 mt-6 mb-6">
           <h3 className="text-zen-text font-medium mb-4">训练参数</h3>
           
           <div className="space-y-6">
