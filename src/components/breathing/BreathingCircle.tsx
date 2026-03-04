@@ -14,7 +14,13 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
   const duration = isBreathingIn ? 2 : 1
 
   return (
-    <div className="relative flex items-center justify-center w-64 h-64">
+    <div 
+      className="relative flex items-center justify-center w-64 h-64"
+      style={{ 
+        willChange: 'transform', // 性能优化（第 27 轮学习）
+        transform: 'translateZ(0)', // GPU 加速
+      }}
+    >
       {/* 最外层生物发光光晕 - 新增 */}
       <motion.div
         className="absolute w-72 h-72 rounded-full"

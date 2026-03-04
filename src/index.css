@@ -83,12 +83,19 @@
   --shadow-glow: 0 0 20px var(--glow-primary);
   --shadow-glow-accent: 0 0 30px var(--glow-secondary);
   
-  /* ===== 动效系统 ===== */
+  /* ===== 动效系统（第 27 轮优化） ===== */
+  /* 微交互：150-300ms */
   --duration-instant: 0ms;
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
-  --duration-slower: 600ms;
+  --duration-micro: 200ms;       /* 微交互（点击、悬停） */
+  --duration-fast: 300ms;        /* 快速过渡 */
+  --duration-normal: 400ms;      /* 标准过渡 */
+  --duration-slow: 600ms;        /* 慢速过渡 */
+  --duration-slower: 1000ms;     /* 超慢过渡 */
+  
+  /* 呼吸动画专用 */
+  --duration-inhale: 2000ms;     /* 吸气 2s */
+  --duration-hold: 15000ms;      /* 憋气 15s */
+  --duration-exhale: 1000ms;     /* 呼气 1s */
   
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
@@ -465,4 +472,33 @@ input[type="checkbox"]:checked::after {
 
 .hover\:bg-zen-gold\/15:hover {
   background-color: rgba(251, 191, 36, 0.15);
+}
+
+/* ===== 无障碍支持 ===== */
+
+/* Reduced Motion 支持（第 27 轮学习） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* 保留必要的视觉反馈 */
+  .breathing-circle {
+    transition: opacity 0.1s !important;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #ffffff;
+    --text-secondary: #e2e8f0;
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+  }
 }
