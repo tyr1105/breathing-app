@@ -104,11 +104,27 @@ export function HistoryPage({ onBack }: HistoryPageProps) {
         )}
 
         {history.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="text-4xl mb-3">📊</div>
-            <p className="text-zen-text-dim">还没有训练记录</p>
-            <p className="text-zen-text-dim text-sm mt-2">完成第一次训练后这里会显示</p>
-          </div>
+          <motion.div 
+            className="text-center py-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-zen-accent/10 flex items-center justify-center">
+              <svg className="w-10 h-10 text-zen-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v9.75C7.5 23.496 6.996 24 6.375 24h-2.25A1.125 1.125 0 013 22.875v-9.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v13.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v17.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              </svg>
+            </div>
+            <p className="text-zen-text text-lg font-medium mb-2">还没有训练记录</p>
+            <p className="text-zen-text-dim text-sm mb-6">完成第一次训练后会在这里显示你的进度</p>
+            <motion.button
+              onClick={onBack}
+              className="px-6 py-3 bg-zen-accent/20 hover:bg-zen-accent/30 text-zen-accent rounded-xl transition-all"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              开始第一次训练
+            </motion.button>
+          </motion.div>
         ) : (
           <div className="space-y-3">
             {history.slice(0, 20).map((record, index) => (
