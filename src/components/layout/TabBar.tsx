@@ -61,8 +61,8 @@ export function TabBar({ activeTab, onTabChange, onStartTraining }: TabBarProps)
       role="navigation"
       aria-label="主导航"
       style={{
-        background: 'rgba(10, 15, 26, 0.98)',
-        borderTop: '1px solid rgba(125, 212, 168, 0.1)',
+        background: 'rgba(10, 31, 10, 0.98)',
+        borderTop: '1px solid rgba(95, 173, 86, 0.1)',
         paddingBottom: 'env(safe-area-inset-bottom, 8px)',
         backdropFilter: 'blur(10px)',
       }}
@@ -86,14 +86,14 @@ export function TabBar({ activeTab, onTabChange, onStartTraining }: TabBarProps)
             onClick={onStartTraining}
             className="w-16 h-16 rounded-full flex items-center justify-center"
             style={{
-              background: 'linear-gradient(135deg, #7dd4a8 0%, #5bc48e 100%)',
-              boxShadow: '0 4px 20px rgba(125, 212, 168, 0.4), 0 0 40px rgba(125, 212, 168, 0.2)',
+              background: 'linear-gradient(135deg, #5FAD56 0%, #4A9A48 100%)',
+              boxShadow: '0 4px 20px rgba(95, 173, 86, 0.4), 0 0 40px rgba(95, 173, 86, 0.2)',
               minWidth: '64px',
               minHeight: '64px',
             }}
             whileHover={{ 
               scale: 1.05,
-              boxShadow: '0 6px 30px rgba(125, 212, 168, 0.5), 0 0 50px rgba(125, 212, 168, 0.3)',
+              boxShadow: '0 6px 30px rgba(95, 173, 86, 0.5), 0 0 50px rgba(95, 173, 86, 0.3)',
             }}
             whileTap={{ scale: 0.95 }}
             aria-label="开始呼吸训练"
@@ -102,7 +102,7 @@ export function TabBar({ activeTab, onTabChange, onStartTraining }: TabBarProps)
           </motion.button>
           <p 
             className="text-center text-[10px] mt-1"
-            style={{ color: '#7dd4a8' }}
+            style={{ color: '#5FAD56' }}
             aria-hidden="true"
           >
             训练
@@ -152,7 +152,7 @@ function TabItem({
         <tab.Icon 
           className="w-6 h-6 transition-all duration-200"
           style={{ 
-            color: isActive ? '#7dd4a8' : '#9ca3af',
+            color: isActive ? '#5FAD56' : '#9ca3af',
             opacity: isActive ? 1 : 0.5,
           }}
           aria-hidden="true"
@@ -160,7 +160,7 @@ function TabItem({
         <span 
           className="text-[10px] transition-all duration-200"
           style={{ 
-            color: isActive ? '#7dd4a8' : '#9ca3af',
+            color: isActive ? '#5FAD56' : '#9ca3af',
             opacity: isActive ? 1 : 0.6,
           }}
         >

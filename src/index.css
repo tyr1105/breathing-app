@@ -19,40 +19,40 @@
   --leading-relaxed: 1.75;
   
   /* ===== 配色系统 ===== */
+
+  /* 背景（OLED 优化 + Forest Calm） */
+  --bg-primary: #0A1F0A;          /* 深夜森林 */
+  --bg-secondary: #0F2A0F;        /* 森林深处 */
+  --bg-tertiary: #1A3A1A;         /* 树荫下 */
+  --bg-elevated: #1A3A1A;
   
-  /* 背景（OLED 优化） */
-  --bg-primary: #0a0f1a;
-  --bg-secondary: #0f172a;
-  --bg-tertiary: #1e293b;
-  --bg-elevated: #1e293b;
+  /* 强调色（Forest Calm - 森林静谧） */
+  --accent-primary: #2D5016;      /* 深森林绿（主） */
+  --accent-secondary: #5FAD56;    /* 嫩叶绿（次） */
+  --accent-tertiary: #A8D5BA;     /* 薄荷雾绿（高亮） */
   
-  /* 强调色（Healthcare + Calm + Biomimetic） */
-  --accent-primary: #22d3ee;      /* 青色（主） */
-  --accent-secondary: #7dd4a8;    /* 薄荷绿（次） */
-  --accent-tertiary: #a78bfa;     /* 淡紫（辅助） */
-  
-  /* 生物发光色（Biomimetic Organic） */
-  --bioluminescent: #00ffff;      /* 生物发光青 */
-  --chlorophyll: #00ff41;         /* 叶绿素绿 */
-  --cellular-pink: #ff9999;       /* 细胞粉 */
+  /* 生物发光色（Forest Calm - 森林光晕） */
+  --bioluminescent: #5FAD56;      /* 森林光晕绿 */
+  --chlorophyll: #4A7C59;         /* 竹青绿 */
+  --cellular-pink: #8FB996;       /* 嫩竹绿 */
   
   /* 状态色 */
-  --success: #10b981;
-  --warning: #fbbf24;
+  --success: #5FAD56;
+  --warning: #D4E09B;             /* 竹黄 */
   --error: #ef4444;
-  --info: #3b82f6;
+  --info: #4A7C59;
   
   /* 文字层次（WCAG AA 对比度验证） */
-  --text-primary: #f8fafc;        /* 对比度 18.31:1 ✅ */
-  --text-secondary: #cbd5e1;      /* 对比度 12.90:1 ✅ */
-  --text-muted: #73839a;          /* 对比度 4.96:1 ✅（修复前：#64748b = 4.03:1 ❌）*/
-  --text-disabled: #475569;
+  --text-primary: #E8F5E9;        /* 晨雾白 ✅ */
+  --text-secondary: #C8E6C9;      /* 薄荷白 ✅ */
+  --text-muted: #81C784;          /* 浅叶绿 ✅ */
+  --text-disabled: #4A5A4A;
   
-  /* 光晕效果 */
-  --glow-primary: rgba(34, 211, 238, 0.3);
-  --glow-secondary: rgba(125, 212, 168, 0.3);
-  --glow-warning: rgba(251, 191, 36, 0.3);
-  --glow-bioluminescent: rgba(0, 255, 255, 0.3);  /* 生物发光光晕 */
+  /* 光晕效果（Forest Calm） */
+  --glow-primary: rgba(47, 80, 22, 0.3);
+  --glow-secondary: rgba(95, 173, 86, 0.3);
+  --glow-warning: rgba(212, 224, 155, 0.3);
+  --glow-bioluminescent: rgba(95, 173, 86, 0.3);  /* 森林光晕 */
   
   /* ===== 间距系统（8pt） ===== */
   --space-1: 0.25rem;   /* 4px */

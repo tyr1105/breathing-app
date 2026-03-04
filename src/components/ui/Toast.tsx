@@ -51,7 +51,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
   const iconColor = {
     success: '#10b981',
     error: '#ef4444',
-    info: '#22d3ee',
+    info: '#4A7C59',
   }[toast.type]
 
   return (

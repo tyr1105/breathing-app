@@ -21,11 +21,11 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
         transform: 'translateZ(0)', // GPU 加速
       }}
     >
-      {/* 最外层生物发光光晕 - 修复圆心居中 */}
+      {/* 最外层森林光晕 - 修复圆心居中 */}
       <motion.div
         className="absolute w-72 h-72 rounded-full"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.08) 0%, transparent 60%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(95, 173, 86, 0.08) 0%, transparent 60%)',
           filter: 'blur(20px)', // 有机模糊效果
           transform: 'translate(-50%, -50%)',
           left: '50%',
@@ -44,7 +44,7 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
       <motion.div
         className="absolute w-64 h-64 rounded-full"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(125, 212, 168, 0.15) 0%, rgba(125, 212, 168, 0.05) 40%, transparent 70%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(95, 173, 86, 0.15) 0%, rgba(95, 173, 86, 0.05) 40%, transparent 70%)',
           transform: 'translate(-50%, -50%)',
           left: '50%',
           top: '50%',
@@ -63,7 +63,7 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
       <motion.div
         className="absolute w-56 h-56 rounded-full"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(125, 212, 168, 0.08) 0%, transparent 60%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(95, 173, 86, 0.08) 0%, transparent 60%)',
           transform: 'translate(-50%, -50%)',
           left: '50%',
           top: '50%',
@@ -100,7 +100,7 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
       <motion.div
         className="absolute w-40 h-40 rounded-full"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(125, 212, 168, 0.2) 0%, rgba(125, 212, 168, 0.08) 100%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(95, 173, 86, 0.2) 0%, rgba(95, 173, 86, 0.08) 100%)',
           transform: 'translate(-50%, -50%)',
           left: '50%',
           top: '50%',
@@ -115,15 +115,15 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
         }}
       />
       
-      {/* 主圆圈 - 增强生物发光效果 */}
+      {/* 主圆圈 - 增强森林光晕效果 */}
       <motion.div
         className="relative w-28 h-28 rounded-full flex items-center justify-center"
         style={{
-          background: 'linear-gradient(135deg, rgba(125, 212, 168, 0.35) 0%, rgba(125, 212, 168, 0.15) 100%)',
+          background: 'linear-gradient(135deg, rgba(95, 173, 86, 0.35) 0%, rgba(95, 173, 86, 0.15) 100%)',
           boxShadow: isActive 
-            ? '0 0 60px rgba(125, 212, 168, 0.4), 0 0 100px rgba(125, 212, 168, 0.2), 0 0 140px rgba(0, 255, 255, 0.15), inset 0 0 30px rgba(125, 212, 168, 0.15)'
-            : '0 0 30px rgba(125, 212, 168, 0.15), 0 0 60px rgba(125, 212, 168, 0.08)',
-          border: '2px solid rgba(125, 212, 168, 0.4)',
+            ? '0 0 60px rgba(95, 173, 86, 0.4), 0 0 100px rgba(95, 173, 86, 0.2), 0 0 140px rgba(95, 173, 86, 0.15), inset 0 0 30px rgba(95, 173, 86, 0.15)'
+            : '0 0 30px rgba(95, 173, 86, 0.15), 0 0 60px rgba(95, 173, 86, 0.08)',
+          border: '2px solid rgba(95, 173, 86, 0.4)',
         }}
         animate={{
           scale: isActive ? (isBreathingIn ? 1.25 : 0.85) : 1,
@@ -137,8 +137,8 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
         <motion.div
           className="w-5 h-5 rounded-full"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(125, 212, 168, 0.8) 0%, rgba(0, 255, 255, 0.4) 100%)',
-            boxShadow: '0 0 20px rgba(125, 212, 168, 0.6), 0 0 40px rgba(0, 255, 255, 0.3)',
+            background: 'radial-gradient(circle at 50% 50%, rgba(95, 173, 86, 0.8) 0%, rgba(168, 213, 186, 0.4) 100%)',
+            boxShadow: '0 0 20px rgba(95, 173, 86, 0.6), 0 0 40px rgba(168, 213, 186, 0.3)',
           }}
           animate={{
             scale: isActive ? (isBreathingIn ? 1.8 : 0.7) : 1,
