@@ -15,21 +15,21 @@ export function BreathingCircle({ isBreathingIn, isActive }: BreathingCircleProp
 
   return (
     <div 
-      className="relative flex items-center justify-center w-64 h-64"
+      className="relative flex items-center justify-center"
       style={{ 
+        width: '300px',
+        height: '300px',
         willChange: 'transform', // 性能优化（第 27 轮学习）
         transform: 'translateZ(0)', // GPU 加速
       }}
     >
       {/* 最外层森林光晕 - 修复圆心居中 */}
       <motion.div
-        className="absolute w-72 h-72 rounded-full"
+        className="absolute top-1/2 left-1/2 w-72 h-72 rounded-full"
         style={{
           background: 'radial-gradient(circle at 50% 50%, rgba(95, 173, 86, 0.08) 0%, transparent 60%)',
           filter: 'blur(20px)', // 有机模糊效果
           transform: 'translate(-50%, -50%)',
-          left: '50%',
-          top: '50%',
         }}
         animate={{
           scale: isActive ? (isBreathingIn ? 1.8 : 1.2) : 1,

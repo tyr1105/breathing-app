@@ -66,14 +66,15 @@
   --space-12: 3rem;     /* 48px */
   --space-16: 4rem;     /* 64px */
   
-  /* ===== 圆角系统 ===== */
+  /* ===== 圆角系统（Organic Biophilic 优化） ===== */
   --radius-sm: 0.5rem;   /* 8px */
   --radius-md: 0.75rem;  /* 12px */
   --radius-lg: 1rem;     /* 16px */
   --radius-xl: 1.5rem;   /* 24px */
+  --radius-organic: 1.25rem;  /* 20px - 有机圆润 */
   --radius-full: 9999px;
   
-  /* ===== 阴影系统（Neumorphism 暗色适配） ===== */
+  /* ===== 阴影系统（Neumorphism 暗色适配 + Organic 优化） ===== */
   --shadow-raised: 
     8px 8px 16px rgba(0, 0, 0, 0.4),
     -8px -8px 16px rgba(255, 255, 255, 0.02);
@@ -82,6 +83,10 @@
     inset -4px -4px 8px rgba(255, 255, 255, 0.02);
   --shadow-glow: 0 0 20px var(--glow-primary);
   --shadow-glow-accent: 0 0 30px var(--glow-secondary);
+  
+  /* Organic Biophilic 阴影（第 33 轮学习） */
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-organic: 0 12px 40px rgba(47, 80, 22, 0.15);
   
   /* ===== 动效系统（第 27 轮优化） ===== */
   /* 微交互：150-300ms */

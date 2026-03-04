@@ -21,8 +21,8 @@ export function SettingsModal({ settings, onSave, onClose }: SettingsModalProps)
   return (
     <div className="h-full overflow-y-auto bg-zen-bg">
       <div className="max-w-md mx-auto w-full px-4 sm:px-6">
-        {/* 固定头部 - 修复遮挡问题 */}
-        <div className="sticky top-0 bg-zen-bg z-10 py-4 border-b border-zen-accent/10">
+        {/* 固定头部 - 修复刘海屏重叠问题 */}
+        <div className="sticky top-0 bg-zen-bg/95 backdrop-blur-sm z-50 pt-[env(safe-area-inset-top,0)] py-4 border-b border-zen-accent/10">
           <div className="flex items-center justify-between">
             <button
               onClick={onClose}
