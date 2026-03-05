@@ -12,7 +12,7 @@ describe('achievements.ts', () => {
         expect(achievement.id).toBeDefined()
         expect(achievement.name).toBeDefined()
         expect(achievement.description).toBeDefined()
-        expect(achievement.icon).toBeDefined()
+        expect(achievement.iconName).toBeDefined()
       })
     })
   })

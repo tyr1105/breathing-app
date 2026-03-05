@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Snowflake } from 'lucide-react'
 import { APP_VERSION, BUILD_DATE, CHANGELOG } from '../../utils/version'
 
 interface AboutPageProps {
@@ -21,7 +22,9 @@ export function AboutPage({ onBack }: AboutPageProps) {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
         >
-          <div className="text-6xl mb-4">❄️</div>
+          <div className="flex justify-center mb-4">
+            <Snowflake className="w-16 h-16 text-zen-accent" />
+          </div>
           <h1 className="text-2xl font-light text-zen-text mb-2">冰人呼吸法</h1>
           <p className="text-zen-text-dim text-sm">Wim Hof Method Training App</p>
           <p className="text-zen-text-dim text-xs mt-2">版本 {APP_VERSION} | {BUILD_DATE}</p>

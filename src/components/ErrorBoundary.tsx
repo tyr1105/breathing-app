@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react'
+import { Frown } from 'lucide-react'
 
 interface Props {
   children: ReactNode
@@ -33,7 +34,9 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="fullscreen-page bg-zen-bg p-4">
           <div className="max-w-sm w-full text-center">
-            <div className="text-6xl mb-4">😔</div>
+            <div className="flex justify-center mb-4">
+              <Frown className="w-16 h-16 text-zen-text-dim" />
+            </div>
             <h2 className="text-2xl font-light text-zen-text mb-4">
               出错了
             </h2>

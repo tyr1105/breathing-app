@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Wind, Heart, AlertTriangle, Target } from 'lucide-react'
 
 interface OnboardingModalProps {
   onComplete: () => void
@@ -7,26 +8,34 @@ interface OnboardingModalProps {
 
 const steps = [
   {
-    icon: '🌬️',
+    iconName: 'Wind',
     title: '冰人呼吸法',
     description: '一种强大的呼吸技巧，可以帮助你提升能量、减轻压力、增强免疫力。',
   },
   {
-    icon: '🫁',
+    iconName: 'Heart',
     title: '如何练习',
     description: '30次深呼吸后憋气，恢复呼吸15秒，重复3轮。全程放松，专注呼吸。',
   },
   {
-    icon: '⚠️',
+    iconName: 'AlertTriangle',
     title: '安全第一',
     description: '请勿在水中、驾驶时或站立时练习。如有不适请立即停止。',
   },
   {
-    icon: '🎯',
+    iconName: 'Target',
     title: '开始训练',
     description: '跟随屏幕提示呼吸，闭眼体验效果更佳。准备好开始了吗？',
   },
 ]
+
+// 图标映射表
+const ICON_MAP: Record<string, any> = {
+  Wind,
+  Heart,
+  AlertTriangle,
+  Target,
+}
 
 export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
@@ -54,7 +63,14 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
             exit={{ opacity: 0, x: -50 }}
             className="text-center"
           >
-            <div className="text-7xl mb-6">{steps[currentStep].icon}</div>
+            <div className="flex justify-center mb-6">
+              {(() => {
+                const IconComponent = ICON_MAP[steps[currentStep].iconName]
+                return IconComponent ? (
+                  <IconComponent className="w-20 h-20 text-zen-accent" />
+                ) : null
+              })()}
+            </div>
             <h2 className="text-2xl font-light text-zen-text mb-3">
               {steps[currentStep].title}
             </h2>

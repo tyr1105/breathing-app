@@ -3,7 +3,7 @@ export interface Achievement {
   id: string
   name: string
   description: string
-  icon: string
+  iconName: string // Lucide 图标名称
   unlockedAt?: string
 }
 
@@ -12,67 +12,67 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: 'first-training',
     name: '初次尝试',
     description: '完成第一次训练',
-    icon: '🎯',
+    iconName: 'Target',
   },
   {
     id: 'streak-3',
     name: '连续3天',
     description: '连续训练3天',
-    icon: '🔥',
+    iconName: 'Flame',
   },
   {
     id: 'streak-7',
     name: '一周坚持',
     description: '连续训练7天',
-    icon: '🌟',
+    iconName: 'Star',
   },
   {
     id: 'streak-30',
     name: '月度冠军',
     description: '连续训练30天',
-    icon: '👑',
+    iconName: 'Crown',
   },
   {
     id: 'hold-30',
     name: '憋气新手',
     description: '憋气达到30秒',
-    icon: '💨',
+    iconName: 'Wind',
   },
   {
     id: 'hold-60',
     name: '憋气达人',
     description: '憋气达到1分钟',
-    icon: '💪',
+    iconName: 'Dumbbell',
   },
   {
     id: 'hold-90',
     name: '憋气大师',
     description: '憋气达到90秒',
-    icon: '🏆',
+    iconName: 'Trophy',
   },
   {
     id: 'hold-120',
     name: '冰人附体',
     description: '憋气达到2分钟',
-    icon: '❄️',
+    iconName: 'Snowflake',
   },
   {
     id: 'sessions-10',
     name: '勤奋学员',
     description: '完成10次训练',
-    icon: '📚',
+    iconName: 'BookOpen',
   },
   {
     id: 'sessions-50',
     name: '呼吸专家',
     description: '完成50次训练',
-    icon: '🎖️',
+    iconName: 'Medal',
   },
   {
     id: 'sessions-100',
     name: '呼吸大师',
     description: '完成100次训练',
-    icon: '🏅',
+    iconName: 'Award',
   },
 ]
 

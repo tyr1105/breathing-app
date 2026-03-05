@@ -1,7 +1,7 @@
 {
   "name": "breathing-app",
   "private": true,
-  "version": "3.2.9",
+  "version": "3.2.10",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,6 +19,7 @@
     "@capacitor/core": "^8.1.0",
     "@capacitor/status-bar": "^8.0.1",
     "framer-motion": "^12.34.3",
+    "lucide-react": "^0.577.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zustand": "^5.0.11"

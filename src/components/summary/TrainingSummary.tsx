@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { PartyPopper, Trophy, Flame } from 'lucide-react'
 import { statsManager } from '../../utils/storage'
 import { ShareCard } from '../share/ShareCard'
 
@@ -32,18 +33,21 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', duration: 0.8 }}
         >
-          <div className="text-6xl mb-4">🎉</div>
+          <div className="flex justify-center mb-4">
+            <PartyPopper className="w-16 h-16 text-zen-accent" />
+          </div>
           <h2 className="text-3xl font-light text-zen-accent mb-2">训练完成</h2>
           <p className="text-zen-text-dim">太棒了！你完成了 {totalRounds} 轮训练</p>
           
           {isNewRecord && (
             <motion.div
-              className="mt-4 bg-zen-gold/20 text-zen-gold px-4 py-2 rounded-full inline-block"
+              className="mt-4 bg-zen-gold/20 text-zen-gold px-4 py-2 rounded-full inline-flex items-center gap-2"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.5 }}
             >
-              🏆 新纪录！
+              <Trophy className="w-5 h-5" />
+              <span>新纪录！</span>
             </motion.div>
           )}
         </motion.div>
@@ -58,7 +62,10 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
           <div className="text-5xl font-light text-zen-accent mb-4">{formatTime(totalTime)}</div>
           
           {stats.consecutiveDays > 1 && (
-            <div className="text-sm text-zen-gold">🔥 连续训练 {stats.consecutiveDays} 天</div>
+            <div className="flex items-center justify-center gap-2 text-sm text-zen-gold">
+              <Flame className="w-4 h-4" />
+              <span>连续训练 {stats.consecutiveDays} 天</span>
+            </div>
           )}
         </motion.div>
 
@@ -141,7 +148,7 @@ export function TrainingSummary({ roundHoldTimes, totalRounds, onRestart }: Trai
         </motion.button>
 
         <p className="text-center text-xs text-zen-text-dim mt-6">
-          坚持每天练习，效果更佳 💪
+          坚持每天练习，效果更佳
         </p>
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { AlertTriangle } from 'lucide-react'
+
 interface SafetyModalProps {
   onConfirm: () => void
   onSkip?: () => void
@@ -8,7 +10,9 @@ export function SafetyModal({ onConfirm, onSkip }: SafetyModalProps) {
     <div className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50">
       <div className="bg-zen-bg-light rounded-3xl p-8 max-w-md w-full shadow-2xl border border-zen-accent/10 animate-fade-in">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">⚠️</div>
+          <div className="flex justify-center mb-4">
+            <AlertTriangle className="w-16 h-16 text-zen-gold" />
+          </div>
           <h2 className="text-2xl font-semibold text-zen-gold">
             安全提示
           </h2>
