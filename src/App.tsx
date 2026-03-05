@@ -217,7 +217,7 @@ function App() {
     return () => clearTimeout(timer)
   }, [phase, countdown, pausedPhase])
 
-  // 呼吸循环
+  // 呼吸循环 - 方案 D: 添加 1s 暂停阶段（4s 周期)
   useEffect(() => {
     if (phase !== 'breathing') return
 
@@ -233,20 +233,29 @@ function App() {
       
       const exhaleTimer = setTimeout(() => {
         if (phase !== 'breathing') return
-        setBreathCount(prev => {
-          const newCount = prev + 1
-          if (newCount >= breathsPerRound) {
-            setPhase('hold')
-            setHoldTime(0)
-            playSound('holdStart')
-            doVibrate('long')
-          }
-          return newCount
-        })
-      }, 1000)
+        setBreathText('暂停')  // 新增暂停状态
+        
+        const pauseTimer = setTimeout(() => {
+          if (phase !== 'breathing') return
+          setBreathCount(prev => {
+            const newCount = prev + 1
+            if (newCount >= breathsPerRound) {
+              setPhase('hold')
+              setHoldTime(0)
+              playSound('holdStart')
+              doVibrate('long')
+            } else {
+              setBreathText('吸气')  // 准备下一次吸气
+            }
+            return newCount
+          })
+        }, 1000)  // 暂停 1s
+
+        return () => clearTimeout(pauseTimer)
+      }, 1000)  // 呼气 1s
 
       return () => clearTimeout(exhaleTimer)
-    }, 2000)
+    }, 2000)  // 吸气 2s
 
     return () => clearTimeout(inhaleTimer)
   }, [phase, breathCount, breathsPerRound, playSound, doVibrate])
@@ -418,7 +427,7 @@ function App() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
                 >
-                  <BreathingCircle isBreathingIn={true} isActive={false} />
+                  <BreathingCircle isBreathingIn={true} isActive={false} breathPhase="inhale" />
                 </motion.div>
                 
                 {/* 开始按钮 */}
@@ -663,7 +672,7 @@ function App() {
             {breathText}
           </motion.div>
           
-          <BreathingCircle isBreathingIn={breathText === '吸气'} isActive={true} />
+          <BreathingCircle isBreathingIn={breathText === '吸气'} isActive={true} breathPhase={breathText === '吸气' ? 'inhale' : breathText === '呼气' ? 'exhale' : 'pause'} />
           
           {/* 呼吸节奏指示器 - 新增 */}
           <motion.div 
@@ -756,7 +765,7 @@ function App() {
             憋气
           </motion.div>
           
-          <BreathingCircle isBreathingIn={false} isActive={false} />
+          <BreathingCircle isBreathingIn={false} isActive={false} breathPhase="pause" />
           
           <div className="mt-8">
             <Timer time={holdTime} label="" />
@@ -824,7 +833,7 @@ function App() {
             深吸一口气
           </motion.div>
           <div className="text-xl text-zen-text-dim mb-8">然后憋住 {recoveryTime} 秒</div>
-          <BreathingCircle isBreathingIn={true} isActive={true} />
+          <BreathingCircle isBreathingIn={true} isActive={true} breathPhase="inhale" />
           <div className="mt-8">
             <Timer time={recoveryTime} label="恢复呼吸" />
           </div>
