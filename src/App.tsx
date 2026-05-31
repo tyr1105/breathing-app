@@ -56,7 +56,7 @@ function App() {
   const [holdTime, setHoldTime] = useState(0)
   const [recoveryTime, setRecoveryTime] = useState(15)
   const [roundHoldTimes, setRoundHoldTimes] = useState<number[]>([])
-  const [breathText, setBreathText] = useState<'吸气' | '呼气'>('吸气')
+  const [breathText, setBreathText] = useState<'吸气' | '呼气' | '暂停'>('吸气')
   const [settings, setSettings] = useState<Settings>(settingsManager.get())
   const [pausedPhase, setPausedPhase] = useState<TrainingPhase | null>(null)
   const [countdown, setCountdown] = useState(3) // 倒计时计数器

@@ -1,9 +1,9 @@
 const CACHE_NAME = 'breathing-app-v1'
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/vite.svg',
+  '/breathing-app/',
+  '/breathing-app/index.html',
+  '/breathing-app/manifest.json',
+  '/breathing-app/vite.svg',
 ]
 
 self.addEventListener('install', (event) => {
